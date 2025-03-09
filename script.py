@@ -56,18 +56,20 @@ def jiangqishuichi_alg(data_list, dijia):
     jiangqishuichi_buchang_fee = round(data_list[3] * dijia * 0.28, 2)
     height = data_list[1].split("米")[0].split("（")[1]
     print(height)
+    volume = round(data_list[2] * float(height), 3)
     jiangqishuichi_fee = round(data_list[2] * float(height) * 440, 2)
     jiangqishuichi_summary_fee = round(jiangqishuichi_fee + jiangqishuichi_buchang_fee + jiangqishuichi_anzhi_fee, 2)
     print(jiangqishuichi_anzhi_fee)
     print(jiangqishuichi_buchang_fee)
     print(jiangqishuichi_fee)
     print(jiangqishuichi_summary_fee)
-    return jiangqishuichi_buchang_fee, jiangqishuichi_anzhi_fee, jiangqishuichi_fee
+    return jiangqishuichi_buchang_fee, jiangqishuichi_anzhi_fee, jiangqishuichi_fee, volume
 
 def tuyutang_alg(data_list, dijia):
     tuyutang_anzhi_fee = round(data_list[3] * dijia * 0.6, 2)
     tuyutang_buchang_fee = round(data_list[3] * dijia * 0.28, 2)
     height = data_list[1].split("米")[0].split("（")[1]
+    volume = round(data_list[2] * float(height), 3)
     tuyutang_fee = round(data_list[2] * float(height) * 7.4, 2)
     yumiao_fee = round(data_list[3] * 1000, 2)
     print(yumiao_fee)
@@ -76,7 +78,7 @@ def tuyutang_alg(data_list, dijia):
     print(tuyutang_anzhi_fee)
     tuyutang_summary_fee = round(tuyutang_fee + yumiao_fee + tuyutang_buchang_fee + tuyutang_anzhi_fee, 2)
     print(tuyutang_summary_fee)
-    return tuyutang_buchang_fee, tuyutang_anzhi_fee, tuyutang_fee, yumiao_fee
+    return tuyutang_buchang_fee, tuyutang_anzhi_fee, tuyutang_fee, yumiao_fee, volume
 
 def shaichangyinghua_alg(data_list, dijia):
     shaichangyinghua_anzhi_fee = round(data_list[3] * dijia * 0.6, 2)

@@ -78,6 +78,8 @@ def get_farmland_level(village_name):
 def get_land_tree_fee(data, dijia, date, excel_header, village_name):
     name = False
     flag = False
+    buchangdanjia = round(dijia * 0.28, 2)
+    anzhidanjia = round(dijia * 0.6, 2)
     for i in data:
         if not i[1]:
             continue
@@ -87,6 +89,7 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
             sheet_name = header_into_excel(name, village_name, date, excel_header)
         if i[0] != name:
             flag = False
+            summary_into_excel(sheet_name)
         else:
             flag = True
         if not flag:
@@ -95,35 +98,34 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
 
         if i[1] == "旱地":
             buchang, anzhi, qingmiao, lingxing = dryland_alg(i, dijia)
-            data_into_excel(sheet_name, "旱地", i[3], anzhi=anzhi, qingmiao=qingmiao, lingxing=lingxing, buchang=buchang)
+            handle_handi(sheet_name, i[3], anzhi, buchang, qingmiao, lingxing, anzhidanjia, buchangdanjia)
         elif i[1] in "林地、建设用地、道路、沟渠":
             buchang, anzhi = roadland_alg(i, dijia)
-            data_into_excel(sheet_name, i[1])
+            handle_lindi(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia)
         elif i[1] == "有主碑坟":
             youzhubeifen = youzhubeifen_alg(i)
-            data_into_excel(sheet_name, i[1])
+            handle_beifen(sheet_name, i[2], youzhubeifen)
         elif i[1] == "有主普坟":
             youzhupufen = youzhupufen_alg(i)
-            data_into_excel(sheet_name, i[1])
+            handle_pufen(sheet_name, i[2], youzhupufen)
         elif i[1] == "晒场硬化":
             buchang, anzhi, shaichangyinghua = shaichangyinghua_alg(i, dijia)
-            data_into_excel(sheet_name, i[1])
+            handle_shaichang(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia, shaichangyinghua)
         elif i[1] == "水井":
-            shujing = shuijing_alg(i)
-            data_into_excel(sheet_name, i[1])
+            shuijing = shuijing_alg(i)
+            handle_shuijing(sheet_name, i[2], shuijing)
         elif i[1] == "给水管":
             jishuiguan = jishuiguan_alg(i)
-            data_into_excel(sheet_name, i[1])
+            handle_shuiguan(sheet_name, i[2], jishuiguan)
         elif i[1] == "地窖":
             dijiao = dijiao_alg(i)
-            data_into_excel(sheet_name, i[1])
+            handle_dijiao(sheet_name, i[2], dijiao)
         elif "浆砌水池" in i[1]:
-            buchang, anzhi, jiangqishuichi = jiangqishuichi_alg(i, dijia)
-            data_into_excel(sheet_name, "浆砌水池")
+            buchang, anzhi, jiangqishuichi, volume = jiangqishuichi_alg(i, dijia)
+            handle_shuichi(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, jiangqishuichi)
         elif "土鱼塘" in i[1]:
-           buchang, anzhi, tuyutang, yumiao_fee = tuyutang_alg(i, dijia)
-           data_into_excel(sheet_name, "土鱼塘")
-
+           buchang, anzhi, tuyutang, yumiao_fee, volume = tuyutang_alg(i, dijia)
+           handle_yutang(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, tuyutang, yumiao_fee)
         else:
             for key, value in land_tree_type.items():
                 for type in key:
@@ -133,9 +135,11 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
                                 money = fee
                                 print(i[1], money)
                                 buchang, anzhi, tree = tree_alg(i, dijia, money)
-                                data_into_excel(sheet_name, "tree", tree_type=i[1])
-
-
+                                handle_default(sheet_name, i[1], i[3], anzhi, buchang, anzhidanjia, buchangdanjia, tree,
+                                               money)
+        # 计算最后一位
+        if i == data[-4]:
+            summary_into_excel(sheet_name)
 def run():
     village_name, data, date, excel_header = get_data()
     dijia = get_farmland_level(village_name)

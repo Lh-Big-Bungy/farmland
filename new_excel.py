@@ -2,6 +2,8 @@ from datetime import datetime
 from openpyxl.styles import Alignment
 import os
 from openpyxl import load_workbook, Workbook
+from cn2an import an2cn  # 用于转换数字为中文大写
+from hanziconv import HanziConv  # 简体转繁体
 
 def header_into_excel(name, village_name, date, excel_header):
     # **Step 1: 定义 Excel 文件名**
@@ -62,77 +64,156 @@ def header_into_excel(name, village_name, date, excel_header):
 
     wb.save(file_name)
     return sheet_name
-def data_into_excel(sheet_name, type, area, anzhi=None, buchang=None, qingmiao=None, lingxing=None, shuichi=None, shuijing=None,
-                    shuiguan=None, beifen=None, pufen=None, yutang=None, yumiao=None, shaichang=None, tree_type=None):
+
+def handle_handi(sheet_name, area, anzhi, buchang, qingmiao, lingxing, anzhidanjia,
+                 buchangdanjia):
+    """处理旱地的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        ['耕地青苗费', '亩', area, 2200.00, qingmiao],
+        ['耕地零星林木', '亩', area, 2000.00, lingxing],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_lindi(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia):
+    """处理林地、建设用地、道路、沟渠的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_beifen(sheet_name, number, beifen):
+    """处理有主碑坟的补偿数据"""
+    new_data =  [
+        ['有主碑坟', '座', number, 5000.00, beifen],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_pufen(sheet_name, number, pufen):
+    """处理有主普坟的补偿数据"""
+    new_data = [
+        ['有主普坟', '座', number, 3000.00, pufen],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_shaichang(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia, shaichang):
+    """处理晒场硬化的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
+        ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+        ['晒场硬化', 'm2', area, 40.00, shaichang],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_shuijing(sheet_name, number, shuijing):
+    """处理水井的补偿数据"""
+    new_data = [
+        ['水井', '眼', number, 500.00, shuijing],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_shuiguan(sheet_name, number, shuiguan):
+    """处理给水管的补偿数据"""
+    new_data = [
+        ['给水管', 'm', number, 7.00, shuiguan],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_dijiao(sheet_name, number, dijiao):
+    """处理地窖的补偿数据"""
+    new_data = [
+        ['地窖', '座', number, 800.00, dijiao],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_shuichi(sheet_name, area, volume, anzhi, buchang, anzhidanjia, buchangdanjia, shuichi):
+    """处理浆砌水池的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        ['浆砌水池', 'm3', volume, 440.00, shuichi],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_yutang(sheet_name, area, volume, anzhi, buchang,anzhidanjia, buchangdanjia, yutang, yumiao):
+    """处理土鱼塘的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        ['土鱼塘', 'm3', volume, 7.40, yutang],
+        ['鱼损', '亩', area, 1000.00, yumiao],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def handle_default(sheet_name, tree_type, area, anzhi, buchang, anzhidanjia, buchangdanjia, tree, treedanjia):
+    """默认情况（其他类型）"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        [tree_type, '亩', area, treedanjia, tree],
+    ]
+    data_into_excel(sheet_name, new_data)
+
+def data_into_excel(sheet_name, new_data):
+    """根据类型选择对应的函数，写入 Excel"""
+    # 读取 Excel 文件
     wb = load_workbook('output_file.xlsx')
     ws = wb[sheet_name]
-    # 3. 找到最后一行
-    # 方法 1: 使用 max_row 属性找到最后一行
-    last_row = ws.max_row  # 获取最后一行号
-    if type == "旱地":
-        new_data = [
-            ['土地补偿费（户）', '亩', area, 1, buchang],
-            ['土地安置补助费', '亩', area, 1, anzhi],
-            ['耕地青苗费', '亩', area, 1, qingmiao],
-            ['耕地零星林木', '亩', area, 1, lingxing],
-        ]
-    elif type in "林地、建设用地、道路、沟渠":
-        new_data = [
-            ['土地补偿费（户）', '亩', area, 1, buchang],
-            ['土地安置补助费', '亩', area, 1, anzhi],
-        ]
-    elif type == "有主碑坟":
-        new_data = [
-            ['有主碑坟', '座', area, 5000, beifen],
-        ]
-    elif type == "有主普坟":
-        new_data = [
-            ['有主普坟', '座', 1, 1, 1],
-        ]
-    elif type == "晒场硬化":
-        new_data = [
-            ['土地补偿费（户）', '亩', 1, 1, 1],
-            ['土地安置补助费', '亩', 1, 1, 1],
-            ['晒场硬化', 'm2', 1, 1, 1],
-        ]
-    elif type == "水井":
-        new_data = [
-            ['水井', '眼', 1, 1, 1],
-        ]
-    elif type == "给水管":
-        new_data = [
-            ['给水管', 'm', 1, 1, 1],
-        ]
-    elif type == "地窖":
-        new_data = [
-            ['地窖', '座', 1, 1, 1],
-        ]
-    elif type == "浆砌水池":
-        new_data = [
-            ['土地补偿费（户）', '亩', 1, 1, 1],
-            ['土地安置补助费', '亩', 1, 1, 1],
-            ['浆砌水池', 'm3', 1, 1, 1],
-        ]
-    elif type == "土鱼塘":
-        new_data = [
-            ['土地补偿费（户）', '亩', 1, 1, 1],
-            ['土地安置补助费', '亩', 1, 1, 1],
-            ['土鱼塘', 'm3', 1, 1, 1],
-            ['鱼损', '亩', 1, 1, 1],
-        ]
-    else:
-        new_data = [
-            ['土地补偿费（户）', '亩', 1, 1, 1],
-            ['土地安置补助费', '亩', 1, 1, 1],
-            [tree_type, '亩', 1, 1, 1],
-        ]
 
+    # 找到最后一行
+    last_row = ws.max_row
+    # 记录数据起始行
+    start_row = last_row + 1
     # 将新数据写入工作表
     for row in new_data:
-        last_row += 1  # 移动到下一行
-        for col, value in enumerate(row, start=1):  # 从第 1 列开始
-            ws.cell(row=last_row, column=col, value=value)
+        last_row += 1
+        for col, value in enumerate(row, start=1):
+            # 处理小数格式
+            if col == 3:  # C列 (第3列) 保留3位小数
+                value = round(float(value), 3) if isinstance(value, (int, float)) else value
+                cell_format = '0.000'  # Excel 显示 3 位小数
+            elif col in [4, 5]:  # D、E列 (第4、5列) 保留2位小数
+                value = round(float(value), 2) if isinstance(value, (int, float)) else value
+                cell_format = '0.00'  # Excel 显示 2 位小数
+            else:
+                cell_format = None  # 其他列不做特殊格式化
 
+            cell = ws.cell(row=last_row, column=col, value=value)
+
+            # 设置 Excel 显示格式
+            if cell_format:
+                cell.number_format = cell_format  # 确保 Excel 显示小数
+
+    # 保存 Excel
+    wb.save('output_file.xlsx')
+def summary_into_excel(sheet_name):
+    wb = load_workbook('output_file.xlsx')
+    ws = wb[sheet_name]
+
+    # 记录数据起始行
+    start_row = 4
+    # 记录最后一行
+    last_row = ws.max_row
+    # 计算 E 列总和
+    sum_formula = round(sum(ws.cell(row=row, column=5).value for row in range(start_row, last_row + 1)),2)
+    # 转换为中文大写
+    total_chinese = an2cn(sum_formula)
+    # 转换为 **繁体中文**
+    total_chinese_traditional = HanziConv.toTraditional(total_chinese)
+    ws.cell(row=last_row + 1, column=5, value=sum_formula).number_format = '0.00'  # E列写公式，保留2位小数
+    # 在 A 列最后一行填入 "合计"
+    ws.cell(row=last_row + 1, column=1, value="合计")
+    ws.cell(row=last_row + 2, column=1, value="大写")
+    ws.cell(row=last_row + 2, column=2, value="人民币")
+    merge_range = f"C{last_row + 2}:F{last_row + 2}"
+    ws.merge_cells(merge_range)
+    ws.cell(row=last_row + 2, column=3, value=total_chinese)
+    # 获取单元格并设置居中
+    cell = ws.cell(row=last_row + 2, column=3)
+    cell.alignment = Alignment(horizontal='center', vertical='center')
+    # 保存 Excel
     wb.save('output_file.xlsx')
 
 if __name__ == '__main__':
