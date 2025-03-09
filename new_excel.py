@@ -156,6 +156,12 @@ def handle_default(sheet_name, tree_type, area, anzhi, buchang, anzhidanjia, buc
     ]
     data_into_excel(sheet_name, new_data)
 
+def village_jiti_into_excel(sheet_name, area, cunjiti, cunjitidanjia):
+    new_data = [
+        ['村集体土地补偿费', '亩', area, cunjitidanjia, cunjiti],
+    ]
+    data_into_excel(sheet_name, new_data)
+
 def data_into_excel(sheet_name, new_data):
     """根据类型选择对应的函数，写入 Excel"""
     # 读取 Excel 文件
@@ -199,7 +205,7 @@ def summary_into_excel(sheet_name):
     # 计算 E 列总和
     sum_formula = round(sum(ws.cell(row=row, column=5).value for row in range(start_row, last_row + 1)),2)
     # 转换为中文大写
-    total_chinese = an2cn(sum_formula)
+    total_chinese = an2cn(sum_formula) + "元"
     # 转换为 **繁体中文**
     total_chinese_traditional = HanziConv.toTraditional(total_chinese)
     ws.cell(row=last_row + 1, column=5, value=sum_formula).number_format = '0.00'  # E列写公式，保留2位小数

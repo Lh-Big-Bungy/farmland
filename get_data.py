@@ -33,12 +33,15 @@ def get_data():
         # 去除换行符（适用于多行合并的情况）
         first_cell = first_cell.replace("\n", "").replace("\r", "")
         # 或者使用 strip() 仅去除行首/行尾的换行符
-        first_cell = first_cell.strip()
+        first_cell = first_cell.strip() + "补偿兑付表"
         print(first_cell)
         print(date)
         print(result)
         print(result[-3])
         return village_name, result, date, first_cell
+
+
+
 if __name__ == '__main__':
     village, data, date, excel_header = get_data()
     for i in data:

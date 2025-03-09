@@ -81,7 +81,16 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
     buchangdanjia = round(dijia * 0.28, 2)
     anzhidanjia = round(dijia * 0.6, 2)
     for i in data:
-        if not i[1]:
+        # 计算村集体
+        if i == data[-3]:
+            sheet_name = header_into_excel("村集体", village_name, date, excel_header)
+            cunjitidanjia = round(dijia * 0.12, 2)
+            cunjiti = round(i[3] * cunjitidanjia, 2)
+            village_jiti_into_excel(sheet_name, i[3], cunjiti, cunjitidanjia)
+            summary_into_excel(sheet_name)
+            break
+        # 排除多余项
+        if not i[1] and i != data[-3]:
             continue
         if not name and not flag:
             name = i[0]
