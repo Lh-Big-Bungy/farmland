@@ -28,26 +28,31 @@ def tree_alg(data_list, dijia, fee):
     print(tree_summary_fee)
     return tree_buchang_fee, tree_anzhi_fee, tree_fee
 def shuijing_alg(data_list):
-    shuijing_fee = round(data_list[2] * 500, 2)
+    numbers = float(data_list[2].split('眼')[0])
+    shuijing_fee = round(numbers * 500, 2)
     print(shuijing_fee)
     return shuijing_fee
 
 def youzhubeifen_alg(data_list):
-    youzhubeifen_fee = round(data_list[2] * 5000, 2)
+    numbers = float(data_list[2].split('座')[0])
+    youzhubeifen_fee = round(numbers * 5000, 2)
     print(youzhubeifen_fee)
     return youzhubeifen_fee
 def jishuiguan_alg(data_list):
-    jishuiguan_fee = round(data_list[2] * 7, 2)
+    numbers = float(data_list[2].split('米')[0])
+    jishuiguan_fee = round(numbers * 7, 2)
     print(jishuiguan_fee)
     return jishuiguan_fee
 
 def dijiao_alg(data_list):
-    dijiao_fee = round(data_list[2] * 800, 2)
+    numbers = float(data_list[2].split('座')[0])
+    dijiao_fee = round(numbers * 800, 2)
     print(dijiao_fee)
     return dijiao_fee
 
 def youzhupufen_alg(data_list):
-    youzhupufen_fee = round(data_list[2] * 3000, 2)
+    numbers = float(data_list[2].split('座')[0])
+    youzhupufen_fee = round(numbers * 3000, 2)
     print(youzhupufen_fee)
     return youzhupufen_fee
 

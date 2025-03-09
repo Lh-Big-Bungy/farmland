@@ -113,22 +113,25 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
             handle_lindi(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia)
         elif i[1] == "有主碑坟":
             youzhubeifen = youzhubeifen_alg(i)
-            handle_beifen(sheet_name, i[2], youzhubeifen)
+            handle_beifen(sheet_name, i[2].split('座')[0], youzhubeifen)
         elif i[1] == "有主普坟":
             youzhupufen = youzhupufen_alg(i)
-            handle_pufen(sheet_name, i[2], youzhupufen)
+            handle_pufen(sheet_name, i[2].split('座')[0], youzhupufen)
         elif i[1] == "晒场硬化":
             buchang, anzhi, shaichangyinghua = shaichangyinghua_alg(i, dijia)
-            handle_shaichang(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia, shaichangyinghua)
+            handle_shaichang(sheet_name, i[2], anzhi, buchang, anzhidanjia, buchangdanjia, shaichangyinghua)
+        elif i[1] == "蔬菜大棚":
+            buchang, anzhi, shucaidapeng = shucaidapeng_alg(i, dijia)
+            handle_shucaidapeng(sheet_name, i[2], anzhi, buchang, anzhidanjia, buchangdanjia, shucaidapeng)
         elif i[1] == "水井":
             shuijing = shuijing_alg(i)
-            handle_shuijing(sheet_name, i[2], shuijing)
+            handle_shuijing(sheet_name, i[2].split('眼')[0], shuijing)
         elif i[1] == "给水管":
             jishuiguan = jishuiguan_alg(i)
-            handle_shuiguan(sheet_name, i[2], jishuiguan)
+            handle_shuiguan(sheet_name, i[2].split('米')[0], jishuiguan)
         elif i[1] == "地窖":
             dijiao = dijiao_alg(i)
-            handle_dijiao(sheet_name, i[2], dijiao)
+            handle_dijiao(sheet_name, i[2].split('座')[0], dijiao)
         elif "浆砌水池" in i[1]:
             buchang, anzhi, jiangqishuichi, volume = jiangqishuichi_alg(i, dijia)
             handle_shuichi(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, jiangqishuichi)

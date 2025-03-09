@@ -87,14 +87,14 @@ def handle_lindi(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia):
 def handle_beifen(sheet_name, number, beifen):
     """处理有主碑坟的补偿数据"""
     new_data =  [
-        ['有主碑坟', '座', number, 5000.00, beifen],
+        ['有主碑坟', '座', float(number), 5000.00, beifen],
     ]
     data_into_excel(sheet_name, new_data)
 
 def handle_pufen(sheet_name, number, pufen):
     """处理有主普坟的补偿数据"""
     new_data = [
-        ['有主普坟', '座', number, 3000.00, pufen],
+        ['有主普坟', '座', float(number), 3000.00, pufen],
     ]
     data_into_excel(sheet_name, new_data)
 
@@ -107,24 +107,32 @@ def handle_shaichang(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanji
     ]
     data_into_excel(sheet_name, new_data)
 
+def handle_shucaidapeng(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia, shucaidapeng):
+    """处理蔬菜大棚的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
+        ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+        ['蔬菜大棚拆迁（钢结构）', 'm2', area, 45.00, shucaidapeng],
+    ]
+    data_into_excel(sheet_name, new_data)
 def handle_shuijing(sheet_name, number, shuijing):
     """处理水井的补偿数据"""
     new_data = [
-        ['水井', '眼', number, 500.00, shuijing],
+        ['水井', '眼', float(number), 500.00, shuijing],
     ]
     data_into_excel(sheet_name, new_data)
 
 def handle_shuiguan(sheet_name, number, shuiguan):
     """处理给水管的补偿数据"""
     new_data = [
-        ['给水管', 'm', number, 7.00, shuiguan],
+        ['给水管', 'm', float(number), 7.00, shuiguan],
     ]
     data_into_excel(sheet_name, new_data)
 
 def handle_dijiao(sheet_name, number, dijiao):
     """处理地窖的补偿数据"""
     new_data = [
-        ['地窖', '座', number, 800.00, dijiao],
+        ['地窖', '座',float(number), 800.00, dijiao],
     ]
     data_into_excel(sheet_name, new_data)
 
