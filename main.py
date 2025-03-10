@@ -1,7 +1,7 @@
 from get_data import get_data
 from script import *
 from new_excel import *
-
+from excel_to_pdf import excel_to_pdf
 farmland_level = {
     "69900": ["龙舟坪镇", "龙舟坪村"],
     "54200": ["白氏坪村", "刘家冲村", "刘家坳村", "何家坪村", "津洋口村", "邓家坝村", "三渔冲村", "黄家坪村","王子石村", "合子坳村",
@@ -156,6 +156,7 @@ def run():
     village_name, data, date, excel_header = get_data()
     dijia = get_farmland_level(village_name)
     get_land_tree_fee(data, float(dijia), date, excel_header, village_name)
+    excel_to_pdf("output_file.xlsx", "output.pdf")
 
 
 if __name__ == '__main__':

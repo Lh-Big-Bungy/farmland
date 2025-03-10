@@ -2,8 +2,9 @@ from datetime import datetime
 from openpyxl.styles import Alignment
 import os
 from openpyxl import load_workbook, Workbook
-from cn2an import an2cn  # 用于转换数字为中文大写
+import cn2an
 from hanziconv import HanziConv  # 简体转繁体
+from openpyxl.utils import get_column_letter
 
 def header_into_excel(name, village_name, date, excel_header):
     # **Step 1: 定义 Excel 文件名**
@@ -48,15 +49,18 @@ def header_into_excel(name, village_name, date, excel_header):
     ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
 
     # **Step 6: 合并 "户号" 这一列的单元格（如 A2:B2）**
-    ws.merge_cells("A2:B2")  # 让第一行数据的"户号"占两格
     ws["A2"].value = f"户号0000{num}"
     ws["A3"].value = f"项目"
     ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
-    ws["C2"].value = f"户主：{name}"
+    ws.merge_cells("B2:C2")  # 让第一行数据的"户主"占两格
+    ws["B2"].value = f"户主:{name}"
     ws["B3"].value = f"单位"
-    ws["D2"].value = f"住址：{village_name}"
+    ws["D2"].value = f"住址:{village_name}"
     ws["C3"].value = f"数量"
-    ws["F2"].value = f"{date}"
+    ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
+    ws["E2"].value = f"{date}"
+    ws["E2"].alignment = Alignment(horizontal="center", vertical="center")
+
     ws["D3"].value = f"单价"
     ws["E3"].value = f"小计"
     ws["F3"].value = f"备注"
@@ -175,6 +179,19 @@ def data_into_excel(sheet_name, new_data):
     # 读取 Excel 文件
     wb = load_workbook('output_file.xlsx')
     ws = wb[sheet_name]
+    # 设置列宽
+    column_widths = {
+        1: 17,
+        2: 10,
+        3: 20,
+        4: 19,
+        5: 17,
+        6: 5
+    }
+    # 遍历指定的列和对应的宽度
+    for col, width in column_widths.items():
+        column_letter = get_column_letter(col)  # 获取列字母
+        ws.column_dimensions[column_letter].width = width  # 设置列宽
 
     # 找到最后一行
     last_row = ws.max_row
@@ -213,7 +230,7 @@ def summary_into_excel(sheet_name):
     # 计算 E 列总和
     sum_formula = round(sum(ws.cell(row=row, column=5).value for row in range(start_row, last_row + 1)),2)
     # 转换为中文大写
-    total_chinese = an2cn(sum_formula) + "元"
+    total_chinese = cn2an.an2cn(sum_formula, "rmb")
     # 转换为 **繁体中文**
     total_chinese_traditional = HanziConv.toTraditional(total_chinese)
     ws.cell(row=last_row + 1, column=5, value=sum_formula).number_format = '0.00'  # E列写公式，保留2位小数
