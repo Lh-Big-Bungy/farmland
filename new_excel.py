@@ -46,12 +46,9 @@ def header_into_excel(name, village_name, date, excel_header):
     merge_range = "A1:F1"
     ws.merge_cells(merge_range)
     ws["A1"].value = excel_header
-    ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
-
     # **Step 6: 合并 "户号" 这一列的单元格（如 A2:B2）**
-    ws["A2"].value = f"户号0000{num}"
+    ws["A2"].value = f"户号:0000{num}"
     ws["A3"].value = f"项目"
-    ws["A2"].alignment = Alignment(horizontal="center", vertical="center")
     ws.merge_cells("B2:C2")  # 让第一行数据的"户主"占两格
     ws["B2"].value = f"户主:{name}"
     ws["B3"].value = f"单位"
@@ -59,12 +56,15 @@ def header_into_excel(name, village_name, date, excel_header):
     ws["C3"].value = f"数量"
     ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
     ws["E2"].value = f"{date}"
-    ws["E2"].alignment = Alignment(horizontal="center", vertical="center")
-
-    ws["D3"].value = f"单价"
-    ws["E3"].value = f"小计"
+    ws["D3"].value = f"单价(元)"
+    ws["E3"].value = f"小计(元)"
     ws["F3"].value = f"备注"
-
+    cell_list = ["A1", "A2", "A3", "B3", "C3", "D3", "E3", "F3", "E2"]
+    cell_list2 = ["B2", "D2"]
+    for i in cell_list:
+        ws[i].alignment = Alignment(horizontal="center", vertical="center")
+    for j in cell_list2:
+        ws[j].alignment = Alignment(horizontal="left", vertical="center")
 
     wb.save(file_name)
     return sheet_name
@@ -182,11 +182,11 @@ def data_into_excel(sheet_name, new_data):
     # 设置列宽
     column_widths = {
         1: 17,
-        2: 10,
-        3: 20,
-        4: 19,
-        5: 17,
-        6: 5
+        2: 7,
+        3: 15,
+        4: 15,
+        5: 15,
+        6: 8
     }
     # 遍历指定的列和对应的宽度
     for col, width in column_widths.items():
@@ -216,7 +216,13 @@ def data_into_excel(sheet_name, new_data):
             # 设置 Excel 显示格式
             if cell_format:
                 cell.number_format = cell_format  # 确保 Excel 显示小数
-
+                cell.alignment = Alignment(horizontal='right', vertical='center')  # 水平左对齐，垂直居中
+            else:
+                # A 列左对齐，其他列居中
+                if col == 1:
+                    cell.alignment = Alignment(horizontal='left', vertical='center')  # A列左对齐
+                else:
+                    cell.alignment = Alignment(horizontal='center', vertical='center')  # 其他列居中
     # 保存 Excel
     wb.save('output_file.xlsx')
 def summary_into_excel(sheet_name):
@@ -233,7 +239,12 @@ def summary_into_excel(sheet_name):
     total_chinese = cn2an.an2cn(sum_formula, "rmb")
     # 转换为 **繁体中文**
     total_chinese_traditional = HanziConv.toTraditional(total_chinese)
-    ws.cell(row=last_row + 1, column=5, value=sum_formula).number_format = '0.00'  # E列写公式，保留2位小数
+    # 在 E 列插入公式，并设置保留两位小数
+    cell = ws.cell(row=last_row + 1, column=5, value=sum_formula)
+    cell.number_format = '0.00'  # 保留2位小数
+
+    # 设置单元格为垂直居中，左对齐
+    cell.alignment = Alignment(horizontal='right', vertical='center')
     # 在 A 列最后一行填入 "合计"
     ws.cell(row=last_row + 1, column=1, value="合计")
     ws.cell(row=last_row + 2, column=1, value="大写")
@@ -241,9 +252,11 @@ def summary_into_excel(sheet_name):
     merge_range = f"C{last_row + 2}:F{last_row + 2}"
     ws.merge_cells(merge_range)
     ws.cell(row=last_row + 2, column=3, value=total_chinese)
-    # 获取单元格并设置居中
-    cell = ws.cell(row=last_row + 2, column=3)
-    cell.alignment = Alignment(horizontal='center', vertical='center')
+    # 设置居中对齐
+    for row in [last_row + 1, last_row + 2]:
+        for col in [1, 2, 3]:
+            cell = ws.cell(row=row, column=col)
+            cell.alignment = Alignment(horizontal='center', vertical='center')
     # 保存 Excel
     wb.save('output_file.xlsx')
 

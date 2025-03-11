@@ -19,11 +19,23 @@ def excel_to_pdf(input_excel, output_pdf):
     # 获取所有有数据的 sheet
     for sheet in wb.Sheets:
         sheet.UsedRange.Borders.LineStyle = 1  # 设置边框
-
-    # 获取所有 sheet
-    for sheet in wb.Sheets:
-        # 设置页脚内容：每页底部加“户主签名”
-        sheet.PageSetup.CenterFooter = "户主签名："
+        # 去掉第一行和第二行的边框
+        sheet.Rows(1).Borders.LineStyle = 0  # 去掉第一行的边框
+        sheet.Rows(2).Borders.LineStyle = 0  # 去掉第二行的边框
+        # 设置第一行字体为黑体，并放大加粗
+        sheet.Rows(1).Font.Name = "黑体"  # 设置字体为黑体
+        sheet.Rows(1).Font.Size = 16  # 设置字体大小为 16
+        sheet.Rows(1).Font.Bold = True  # 设置字体加粗
+        # 在第一行和第二行之间插入两行空白行
+        sheet.Rows("2:3").Insert()  # 在第二行插入两行空白行
+        # 设置每行高度
+        for row in sheet.UsedRange.Rows:
+            row.RowHeight = 20  # 设置每行高度为 20 磅
+        # 在页眉加入户主签名
+        sheet.PageSetup.RightFooter = ("户主签名：                ")
+        sheet.PageSetup.FooterMargin = 50  # 调整页脚边距（单位：磅，默认值为 15）
+        sheet.PageSetup.LeftMargin = 70  # 左边距设置为 20 磅
+        sheet.PageSetup.RightMargin = 70  # 右边距设置为 20 磅
     # 转换为 PDF（0 代表整个工作簿导出）
     wb.ExportAsFixedFormat(0, output_pdf_path)
 

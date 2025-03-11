@@ -2,6 +2,8 @@ from get_data import get_data
 from script import *
 from new_excel import *
 from excel_to_pdf import excel_to_pdf
+import sys
+
 farmland_level = {
     "69900": ["龙舟坪镇", "龙舟坪村"],
     "54200": ["白氏坪村", "刘家冲村", "刘家坳村", "何家坪村", "津洋口村", "邓家坝村", "三渔冲村", "黄家坪村","王子石村", "合子坳村",
@@ -152,11 +154,20 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
         # 计算最后一位
         if i == data[-4]:
             summary_into_excel(sheet_name)
+
+def get_base_path():
+    """获取可执行文件（EXE）运行所在目录"""
+    if getattr(sys, 'frozen', False):  # 如果是 EXE 运行
+        return os.path.dirname(sys.executable)
+    return os.getcwd()
 def run():
     village_name, data, date, excel_header = get_data()
     dijia = get_farmland_level(village_name)
     get_land_tree_fee(data, float(dijia), date, excel_header, village_name)
-    excel_to_pdf("output_file.xlsx", "output.pdf")
+    base_path = get_base_path()
+    excel_file = os.path.join(base_path, "output_file.xlsx")
+    pdf_file = os.path.join(base_path, "output.pdf")
+    excel_to_pdf(excel_file, pdf_file)
 
 
 if __name__ == '__main__':
