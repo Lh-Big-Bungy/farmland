@@ -107,6 +107,12 @@ def shucaidapeng_alg(data_list, dijia):
     print(shucaidapeng_summary_fee)
     return shucaidapeng_buchang_fee, shucaidapeng_anzhi_fee, shucaidapeng_fee
 
+def zhaijidi_alg(data_list, dijia):
+    zhaijidi_anzhi_fee = round(data_list[3] * dijia * 0.6, 2)
+    zhaijidi_buchang_fee = round(data_list[3] * dijia * 0.28, 2)
+    lingxing_fee = 1000.00
+    return zhaijidi_buchang_fee, zhaijidi_anzhi_fee, lingxing_fee
+
 if __name__ == '__main__':
     jiangqishuichi_alg(['胡方明', '浆砌水池（1米深）', 1.88, 0.003])
     tuyutang_alg(['胡维林', '土鱼塘（1米深）', 1401.42, 2.102])

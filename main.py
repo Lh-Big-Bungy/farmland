@@ -140,6 +140,9 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
         elif "土鱼塘" in i[1]:
            buchang, anzhi, tuyutang, yumiao_fee, volume = tuyutang_alg(i, dijia)
            handle_yutang(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, tuyutang, yumiao_fee)
+        elif i[1] == "宅基地":
+            buchang, anzhi, lingxing = zhaijidi_alg(i, dijia)
+            handle_zhaijidi(sheet_name, i[3], buchang, anzhi, buchangdanjia, anzhidanjia, lingxing)
         else:
             for key, value in land_tree_type.items():
                 for type in key:

@@ -159,6 +159,15 @@ def handle_yutang(sheet_name, area, volume, anzhi, buchang,anzhidanjia, buchangd
     ]
     data_into_excel(sheet_name, new_data)
 
+def handle_zhaijidi(sheet_name, area, buchang, anzhi, buchangdanjia, anzhidanjia, lingxing):
+    """处理宅基地的补偿数据"""
+    new_data = [
+        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
+        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        ['房前屋后零星林木', '户', 1.000, 1000.00, lingxing],
+    ]
+    data_into_excel(sheet_name, new_data)
+
 def handle_default(sheet_name, tree_type, area, anzhi, buchang, anzhidanjia, buchangdanjia, tree, treedanjia):
     """默认情况（其他类型）"""
     new_data = [
