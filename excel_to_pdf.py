@@ -32,10 +32,10 @@ def excel_to_pdf(input_excel, output_pdf):
         for row in sheet.UsedRange.Rows:
             row.RowHeight = 20  # 设置每行高度为 20 磅
         # 在页眉加入户主签名
-        sheet.PageSetup.RightFooter = ("户主签名：                ")
-        sheet.PageSetup.FooterMargin = 50  # 调整页脚边距（单位：磅，默认值为 15）
-        sheet.PageSetup.LeftMargin = 70  # 左边距设置为 20 磅
-        sheet.PageSetup.RightMargin = 70  # 右边距设置为 20 磅
+        sheet.PageSetup.RightFooter = ("户主签字（盖章）：                  ")
+        sheet.PageSetup.FooterMargin = 120  # 调整页脚边距（单位：磅，默认值为 15）
+        sheet.PageSetup.LeftMargin = 70  # 左边距设置为 70 磅
+        sheet.PageSetup.RightMargin = 70  # 右边距设置为 70 磅
     # 转换为 PDF（0 代表整个工作簿导出）
     wb.ExportAsFixedFormat(0, output_pdf_path)
 
@@ -43,3 +43,5 @@ def excel_to_pdf(input_excel, output_pdf):
     wb.Close(SaveChanges=False)
     excel.Quit()
 
+if __name__ == '__main__':
+    excel_to_pdf('output_file.xlsx', 'output.pdf')

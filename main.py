@@ -2,6 +2,8 @@ from get_data import get_data
 from script import *
 from new_excel import *
 from excel_to_pdf import excel_to_pdf
+from summary_excel import *
+from summary_area_excel import *
 import sys
 
 farmland_level = {
@@ -171,8 +173,12 @@ def run():
     excel_file = os.path.join(base_path, "output_file.xlsx")
     pdf_file = os.path.join(base_path, "output.pdf")
     excel_to_pdf(excel_file, pdf_file)
-
-
+    # 金额汇总
+    data_dict, village_name, header, key_list, fenmu_list = get_summary_money()
+    summary_money_excel(header, village_name, data_dict, key_list, fenmu_list)
+    # 面积汇总
+    data_dict, village_name, header, key_list, fenmu_list = get_summary_area()
+    summary_area_excel(header, village_name, data_dict, key_list, fenmu_list)
 if __name__ == '__main__':
     run()
 

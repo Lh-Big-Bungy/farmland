@@ -3,7 +3,7 @@ from decimal import Decimal
 from openpyxl.styles import Alignment, Border, Side, Font
 
 
-def get_summary_money():
+def get_summary_area():
     # 读取 Excel 文件
     file_path = "output_file.xlsx"  # 你的 Excel 文件
     wb = load_workbook(file_path)
@@ -61,38 +61,15 @@ def summary_area_excel(header, village, data_dict, key_list, fenmu_list):
     ws.merge_cells('A3:A4')
     ws['A3'] = '乡镇村'
     ws['A5'] = village
-    # 合并 B2 到 B4 单元格
-    ws.merge_cells('B3:D3')
-    ws['B3'] = '土地补偿面积'
-    ws['B4'] = '分户土地补偿面积'
-    ws['B5'] = str(data_dict['土地补偿费（户）']) + '亩'
-    ws['C4'] = '村集体土地补偿面积'
-    ws['C5'] = str(data_dict['村集体土地补偿费']) + '亩'
-    ws['D4'] = '小计'
-    ws['D5'] = str(Decimal(str(data_dict['土地补偿费（户）'])) + Decimal(str(data_dict['村集体土地补偿费']))) + '亩'  # 防止精度错误
-    if '耕地青苗费' in data_dict:
-        # 合并 E3 到 E4 单元格
-        ws.merge_cells('E3:E4')
-        ws['E3'] = '土地安置面积'
-        ws['E5'] = str(data_dict['土地安置补助费']) + '亩'
-        # 合并 E3 到 E4 单元格
-        ws.merge_cells('F3:F4')
-        ws['F3'] = '耕地青苗面积'
-        ws['F5'] = str(data_dict['耕地青苗费']) + '亩'
-    else:
-        # 合并 E3 到 E4 单元格
-        ws.merge_cells('E3:F4')
-        ws['E3'] = '土地安置面积'
-        ws['E4'] = str(data_dict['土地安置补助费'] + '亩')
     if key_list:
         # 计算小计并填入最后一个单元格下面
         length = len(key_list)
-        # 动态生成合并区域，假设从 G3 开始
-        merge_range = f'G3:{chr(65 + 6 + length - 1)}3'  # chr(65) 是字母 'A' 的 ASCII 值，65 + 6 是G， 再加length然后-1 会给出正确的字母
+        # 动态生成合并区域，假设从 B3 开始
+        merge_range = f'B3:{chr(65 + 1 + length - 1)}3'  # chr(65) 是字母 'A' 的 ASCII 值，65 + 1 是B， 再加length然后-1 会给出正确的字母
 
         # 合并单元格
         ws.merge_cells(merge_range)
-        ws['G3'] = '地上附着物'
+        ws['B3'] = '地上附着物'
         other_dict = {
             '浆砌水池': 'm3',
             '土鱼塘': 'm3',
@@ -103,12 +80,15 @@ def summary_area_excel(header, village, data_dict, key_list, fenmu_list):
             '给水管': 'm',
             '地窖': '座',
         }
-        # 从 G4 开始横向循环填充数据
+        # 从 B4 开始横向循环填充数据
         for i in range(length):
-            col = chr(65 + 6 + i)  # 从 G 列开始 (G -> 7, H -> 8, I -> 9 ...)
+            col = chr(65 + 1 + i)  # 从 B 列开始 (G -> 7, H -> 8, I -> 9 ...)
             if key_list[i] in ['浆砌水池', '土鱼塘', '鱼损', '晒场硬化', '蔬菜大棚拆迁（钢结构）', '水井', '给水管', '地窖']:
                 ws[f'{col}4'] = key_list[i]
                 ws[f'{col}5'] = str(data_dict[key_list[i]]) + other_dict[key_list[i]]  # 填入数据
+            elif key_list[i] == '耕地零星林木':
+                ws[f'{col}4'] = '旱地'
+                ws[f'{col}5'] = str(data_dict[key_list[i]]) + '亩'
             else:
                 ws[f'{col}4'] = key_list[i]
                 ws[f'{col}5'] = str(data_dict[key_list[i]]) + '亩'
@@ -117,15 +97,15 @@ def summary_area_excel(header, village, data_dict, key_list, fenmu_list):
         total_fenmu = sum(data_dict[fenmu] for fenmu in fenmu_list)
         fenmu_list.append('小计')
         fenmu_length = len(fenmu_list)
-        # 确定下一个起始列，即从 G3 合并结束的列之后
-        start_col = chr(65 + 6 + length)  # 计算从 G3 合并区域后开始的位置
+        # 确定下一个起始列，即从 B3 合并结束的列之后
+        start_col = chr(65 + 1 + length)  # 计算从 B3 合并区域后开始的位置
         # 动态生成合并区域，假设从 start_col 和 G6 开始
-        merge_range = f'{start_col}3:{chr(65 + 6 + length + fenmu_length - 1)}3'  # 合并区域从下一个位置开始
+        merge_range = f'{start_col}3:{chr(65 + 1 + length + fenmu_length - 1)}3'  # 合并区域从下一个位置开始
         # 合并单元格
         ws.merge_cells(merge_range)
         ws[start_col + '3'] = '坟墓'
         for i in range(fenmu_length):
-            col = chr(65 + 6 + length + i)  # 从 G 列合并后的位置继续
+            col = chr(65 + 1 + length + i)  # 从 B 列合并后的位置继续
             if i != fenmu_length - 1:
                 ws[f'{col}4'] = fenmu_list[i]
                 ws[f'{col}5'] = str(data_dict[fenmu_list[i]]) + '座'
@@ -133,7 +113,7 @@ def summary_area_excel(header, village, data_dict, key_list, fenmu_list):
                 ws[f'{col}4'] = fenmu_list[i]
                 ws[f'{col}5'] = str(total_fenmu) + '座'
     max_length = length + fenmu_length
-    last_col = chr(65 + 6 + max_length - 1)
+    last_col = chr(65 + 1 + max_length - 1)
     # 合并 A1 到 X1 单元格
     ws.merge_cells(f'A1:{last_col}1')
     ws['A1'] = header
@@ -165,5 +145,5 @@ def summary_area_excel(header, village, data_dict, key_list, fenmu_list):
     wb.save("补偿面积分类汇总表.xlsx")
 
 if __name__ == '__main__':
-    data_dict, village_name, header, key_list, fenmu_list = get_summary_money()
+    data_dict, village_name, header, key_list, fenmu_list = get_summary_area()
     summary_area_excel(header, village_name, data_dict, key_list, fenmu_list)
