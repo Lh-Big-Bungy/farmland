@@ -1,9 +1,9 @@
 
 
-def dryland_alg(data_list, dijia):
+def dryland_alg(data_list, dijia, qingmiao_fee):
     dryland_anzhi_fee = round(data_list[3] * dijia * 0.6, 2)
     dryland_buchang_fee = round(data_list[3] * dijia * 0.28, 2)
-    dryland_qingmiao_fee = round(data_list[3] * 2200, 2)
+    dryland_qingmiao_fee = round(data_list[3] * qingmiao_fee, 2)
     dryland_lingxing_fee = round(data_list[3] * 2000, 2)
     dryland_summary_fee = round(dryland_anzhi_fee + dryland_buchang_fee + dryland_qingmiao_fee + dryland_lingxing_fee, 2)
     print(dryland_anzhi_fee, dryland_buchang_fee, dryland_qingmiao_fee, dryland_lingxing_fee)

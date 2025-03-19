@@ -69,13 +69,13 @@ def header_into_excel(name, village_name, date, excel_header):
     wb.save(file_name)
     return sheet_name
 
-def handle_handi(sheet_name, area, anzhi, buchang, qingmiao, lingxing, anzhidanjia,
+def handle_handi(sheet_name, area, qingmiao_fee, anzhi, buchang, qingmiao, lingxing, anzhidanjia,
                  buchangdanjia):
     """处理旱地的补偿数据"""
     new_data = [
         ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
         ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
-        ['耕地青苗费', '亩', area, 2200.00, qingmiao],
+        ['耕地青苗费', '亩', area, qingmiao_fee, qingmiao],
         ['耕地零星林木', '亩', area, 2000.00, lingxing],
     ]
     data_into_excel(sheet_name, new_data)
@@ -190,12 +190,12 @@ def data_into_excel(sheet_name, new_data):
     ws = wb[sheet_name]
     # 设置列宽
     column_widths = {
-        1: 17,
+        1: 20,
         2: 7,
-        3: 15,
-        4: 15,
-        5: 15,
-        6: 8
+        3: 12,
+        4: 16,
+        5: 16,
+        6: 10
     }
     # 遍历指定的列和对应的宽度
     for col, width in column_widths.items():

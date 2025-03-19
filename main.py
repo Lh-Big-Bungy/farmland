@@ -8,7 +8,7 @@ import sys
 
 farmland_level = {
     "69900": ["龙舟坪镇", "龙舟坪村"],
-    "54200": ["白氏坪村", "刘家冲村", "刘家坳村", "何家坪村", "津洋口村", "邓家坝村", "三渔冲村", "黄家坪村","王子石村", "合子坳村",
+    "54200": ["白氏坪村", "刘家冲村", "刘家坳村", "何家坪村", "津洋口村", "邓家坝村", "三渔冲村", "黄家坪村", "王子石村", "合子坳村",
              "西寺坪村", "晒鼓坪村", "丹水村"],
     "41900": ["朱津滩村", "胡家棚村", "厚丰溪村", "两河口村", "土地坡村", "全伏山村", "郑家榜村", "王家棚村", "观坪林场", "救师口村", "磨市村",
              "芦溪村", "三口堰村", "黄荆庄村", "柳津滩村", "多宝寺村", "花桥村", "青树包村", "溜沙口村", "黍子岭村", "火烧坪林场", "大堰村",
@@ -71,15 +71,24 @@ land_tree_type = {
 
 
 def get_farmland_level(village_name):
+
     for key, value in farmland_level.items():
         for i in value:
             if i in village_name:
                 farmland_fee = key
                 print(farmland_fee)
-                return farmland_fee
+                if farmland_fee == '69900':
+                    qingmiao_fee = 2900.00
+                elif farmland_fee == '54200':
+                    qingmiao_fee = 2500.00
+                elif farmland_fee == '41900':
+                    qingmiao_fee = 2200.00
+                else:
+                    qingmiao_fee = 2000.00
+                return farmland_fee, qingmiao_fee
 
 
-def get_land_tree_fee(data, dijia, date, excel_header, village_name):
+def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_name):
     name = False
     flag = False
     buchangdanjia = round(dijia * 0.28, 2)
@@ -110,8 +119,8 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name):
             sheet_name = header_into_excel(name, village_name, date, excel_header)
 
         if i[1] == "旱地":
-            buchang, anzhi, qingmiao, lingxing = dryland_alg(i, dijia)
-            handle_handi(sheet_name, i[3], anzhi, buchang, qingmiao, lingxing, anzhidanjia, buchangdanjia)
+            buchang, anzhi, qingmiao, lingxing = dryland_alg(i, dijia, qingmiao_fee)
+            handle_handi(sheet_name, i[3], qingmiao_fee, anzhi, buchang, qingmiao, lingxing, anzhidanjia, buchangdanjia)
         elif i[1] in "林地、建设用地、道路、沟渠":
             buchang, anzhi = roadland_alg(i, dijia)
             handle_lindi(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia)
@@ -167,8 +176,8 @@ def get_base_path():
     return os.getcwd()
 def run():
     village_name, data, date, excel_header = get_data()
-    dijia = get_farmland_level(village_name)
-    get_land_tree_fee(data, float(dijia), date, excel_header, village_name)
+    dijia, qingmiao_fee = get_farmland_level(village_name)
+    get_land_tree_fee(data, float(dijia), float(qingmiao_fee), date, excel_header, village_name)
     base_path = get_base_path()
     excel_file = os.path.join(base_path, "output_file.xlsx")
     pdf_file = os.path.join(base_path, "output.pdf")
