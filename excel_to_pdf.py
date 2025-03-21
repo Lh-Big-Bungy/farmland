@@ -38,44 +38,32 @@ def excel_to_pdf(input_excel, output_pdf):
 
         total_rows = sheet.UsedRange.Rows.Count
         total_height = total_rows * row_height  # 计算表格的总高度
-
         # **让 Excel 计算分页行**
-        if sheet.HPageBreaks.Count > 0:
-            page_break_row = sheet.HPageBreaks(1).Location.Row  # 第一分页行
-            available_height = (page_break_row - 1) * 40  # 计算实际可用高度
-        else:
-            # **备用方案**
-            page_height = 1123
-            top_margin = sheet.PageSetup.TopMargin
-            bottom_margin = sheet.PageSetup.BottomMargin
-            available_height = page_height - top_margin - bottom_margin
+
+        page_height = 1123
+        top_margin = sheet.PageSetup.TopMargin
+        bottom_margin = sheet.PageSetup.BottomMargin
+        available_height = page_height - top_margin - bottom_margin
         # **计算是否分页**
-
-        # **获取所有分页行**
-        page_breaks = [pb.Location.Row for pb in sheet.HPageBreaks] if sheet.HPageBreaks.Count > 0 else []
-        if page_breaks:
-            # 获取最后一行的行数
-            last_row = sheet.UsedRange.Rows.Count
-            # 计算目标行号（最后一行的后两行）
-            target_row = last_row + 5
-            # 获取中间列的列号
-            last_column = sheet.Cells(1, sheet.Columns.Count).End(-4159).Column  # -4159 表示 xlToLeft
-            # 在目标行的中间列设置值
-            sheet.Cells(target_row, 4).Value = '户主签字（盖章）：'
-
-
-        else:
-            # **否则，动态调整页脚边距**
-            min_footer_distance = 10  # 页脚与表格底部的最小间距
-            default_footer_margin = 150  # 默认页脚位置
-            if (available_height - total_height) > 160:
-                sheet.PageSetup.FooterMargin = default_footer_margin  # 表格小，页脚固定 150
-            else:
-                footer_value = available_height - total_height - min_footer_distance
-                sheet.PageSetup.FooterMargin = footer_value  # 随内容调整，保持 10 磅间距
-            # 在页脚加入户主签名
+        if (available_height - total_height) > 354:
+            sheet.PageSetup.FooterMargin = 150  # 表格小，页脚固定 150
             sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
 
+        else:
+            # 获取最后一行的行数
+            last_row = sheet.UsedRange.Rows.Count
+            print("last row is ", last_row)
+            # 等于28行时，不用设置页脚的方法，签名会去到下一分页
+            if last_row == 28:
+                sheet.PageSetup.FooterMargin = 50
+                # 设置右下页脚
+                sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
+            else:# 计算目标行号（最后一行的后两行）
+                target_row = last_row + 2
+                # 获取中间列的列号
+                last_column = sheet.Cells(1, sheet.Columns.Count).End(-4159).Column  # -4159 表示 xlToLeft
+                # 在目标行的中间列设置值
+                sheet.Cells(target_row, 4).Value = '户主签字（盖章）：'
     # 转换为 PDF（0 代表整个工作簿导出）
     wb.ExportAsFixedFormat(0, output_pdf_path)
 

@@ -93,34 +93,36 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
     flag = False
     buchangdanjia = round(dijia * 0.28, 2)
     anzhidanjia = round(dijia * 0.6, 2)
+    other_dict = {}
     for i in data:
-        # 计算村集体
-        if i == data[-3]:
-            sheet_name = header_into_excel("村集体", village_name, date, excel_header)
-            cunjitidanjia = round(dijia * 0.12, 2)
-            cunjiti = round(i[3] * cunjitidanjia, 2)
-            village_jiti_into_excel(sheet_name, i[3], cunjiti, cunjitidanjia)
-            summary_into_excel(sheet_name)
-            break
         # 排除多余项
-        if not i[1] and i != data[-3]:
+        if not i[1]:
             continue
+        # 第一个人就新建表
         if not name and not flag:
             name = i[0]
-            flag = True
             sheet_name = header_into_excel(name, village_name, date, excel_header)
+        # 换人时，flag置为False
         if i[0] != name:
             flag = False
-            summary_into_excel(sheet_name)
         else:
             flag = True
+        # 不同的人新建不同的表
         if not flag:
             name = i[0]
             sheet_name = header_into_excel(name, village_name, date, excel_header)
 
-        if i[1] == "旱地":
+        if "旱地" in i[1]:
             buchang, anzhi, qingmiao, lingxing = dryland_alg(i, dijia, qingmiao_fee)
-            handle_handi(sheet_name, i[3], qingmiao_fee, anzhi, buchang, qingmiao, lingxing, anzhidanjia, buchangdanjia)
+            other_people_list, other_people_name = handle_handi(i, sheet_name, i[3], qingmiao_fee, anzhi, buchang, qingmiao,
+                                                           lingxing, anzhidanjia, buchangdanjia)
+            # 处理地上附着物非户主所有的情况
+            if other_people_list and other_people_name:
+                # 如果人名已经在字典中，则添加数据在list中
+                if other_people_name not in other_dict:
+                    other_dict[other_people_name] = [other_people_list]
+                else:
+                    other_dict[other_people_name].append(other_people_list)
         elif i[1] in "林地、建设用地、道路、沟渠":
             buchang, anzhi = roadland_alg(i, dijia)
             handle_lindi(sheet_name, i[3], anzhi, buchang, anzhidanjia, buchangdanjia)
@@ -130,12 +132,26 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
         elif i[1] == "有主普坟":
             youzhupufen = youzhupufen_alg(i)
             handle_pufen(sheet_name, i[2].split('座')[0], youzhupufen)
-        elif i[1] == "晒场硬化":
+        elif "晒场硬化" in i[1]:
             buchang, anzhi, shaichangyinghua = shaichangyinghua_alg(i, dijia)
-            handle_shaichang(sheet_name, i[2], anzhi, buchang, anzhidanjia, buchangdanjia, shaichangyinghua)
-        elif i[1] == "蔬菜大棚":
+            other_people_list, other_people_name = handle_shaichang(i, sheet_name, i[2], anzhi, buchang, anzhidanjia,
+                                                                    buchangdanjia, shaichangyinghua)
+            # 处理地上附着物非户主所有的情况
+            if other_people_list and other_people_name:
+                if other_people_name not in other_dict:
+                    other_dict[other_people_name] = [other_people_list]
+                else:
+                    other_dict[other_people_name].append(other_people_list)
+        elif "蔬菜大棚" in i[1]:
             buchang, anzhi, shucaidapeng = shucaidapeng_alg(i, dijia)
-            handle_shucaidapeng(sheet_name, i[2], anzhi, buchang, anzhidanjia, buchangdanjia, shucaidapeng)
+            other_people_list, other_people_name = handle_shucaidapeng(i, sheet_name, i[2], anzhi, buchang, anzhidanjia,
+                                                                       buchangdanjia, shucaidapeng)
+            # 处理地上附着物非户主所有的情况
+            if other_people_list and other_people_name:
+                if other_people_name not in other_dict:
+                    other_dict[other_people_name] = [other_people_list]
+                else:
+                    other_dict[other_people_name].append(other_people_list)
         elif i[1] == "水井":
             shuijing = shuijing_alg(i)
             handle_shuijing(sheet_name, i[2].split('眼')[0], shuijing)
@@ -147,10 +163,24 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
             handle_dijiao(sheet_name, i[2].split('座')[0], dijiao)
         elif "浆砌水池" in i[1]:
             buchang, anzhi, jiangqishuichi, volume = jiangqishuichi_alg(i, dijia)
-            handle_shuichi(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, jiangqishuichi)
+            other_people_list, other_people_name = handle_shuichi(i, sheet_name, i[3], volume, anzhi, buchang, anzhidanjia,
+                                                                  buchangdanjia, jiangqishuichi)
+            # 处理地上附着物非户主所有的情况
+            if other_people_list and other_people_name:
+                if other_people_name not in other_dict:
+                    other_dict[other_people_name] = [other_people_list]
+                else:
+                    other_dict[other_people_name].append(other_people_list)
         elif "土鱼塘" in i[1]:
            buchang, anzhi, tuyutang, yumiao_fee, volume = tuyutang_alg(i, dijia)
-           handle_yutang(sheet_name, i[3], volume, anzhi, buchang, anzhidanjia, buchangdanjia, tuyutang, yumiao_fee)
+           other_people_list, other_people_name = handle_yutang(i, sheet_name, i[3], volume, anzhi, buchang, anzhidanjia,
+                                                                buchangdanjia, tuyutang, yumiao_fee)
+           # 处理地上附着物非户主所有的情况
+           if other_people_list and other_people_name:
+               if other_people_name not in other_dict:
+                   other_dict[other_people_name] = [other_people_list]
+               else:
+                   other_dict[other_people_name].append(other_people_list)
         elif i[1] == "宅基地":
             buchang, anzhi, lingxing = zhaijidi_alg(i, dijia)
             handle_zhaijidi(sheet_name, i[3], buchang, anzhi, buchangdanjia, anzhidanjia, lingxing)
@@ -163,12 +193,24 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
                                 money = fee
                                 print(i[1], money)
                                 buchang, anzhi, tree = tree_alg(i, dijia, money)
-                                handle_default(sheet_name, i[1], i[3], anzhi, buchang, anzhidanjia, buchangdanjia, tree,
-                                               money)
-        # 计算最后一位
-        if i == data[-4]:
-            summary_into_excel(sheet_name)
-
+                                other_people_list, other_people_name = handle_default(i, sheet_name, i[1], i[3], anzhi,
+                                                                                      buchang, anzhidanjia,
+                                                                                      buchangdanjia, tree, money)
+                                # 处理地上附着物非户主所有的情况
+                                if other_people_list and other_people_name:
+                                    if other_people_name not in other_dict:
+                                        other_dict[other_people_name] = [other_people_list]
+                                    else:
+                                        other_dict[other_people_name].append(other_people_list)
+    if other_dict:
+        other_dict["基本信息"] = [village_name, date, excel_header]
+        other_people_into_excel(other_dict)
+    # 计算村集体
+    sheet_name = header_into_excel("村集体", village_name, date, excel_header)
+    cunjitidanjia = round(dijia * 0.12, 2)
+    cunjiti = round(data[-3][3] * cunjitidanjia, 2)
+    village_jiti_into_excel(sheet_name, data[-3][3], cunjiti, cunjitidanjia)
+    summary_into_excel(sheet_name)
 def get_base_path():
     """获取可执行文件（EXE）运行所在目录"""
     if getattr(sys, 'frozen', False):  # 如果是 EXE 运行
