@@ -5,6 +5,7 @@ from excel_to_pdf import excel_to_pdf
 from summary_excel import *
 from summary_area_excel import *
 import sys
+from each_money_to_excel import each_run
 
 farmland_level = {
     "69900": ["龙舟坪镇", "龙舟坪村"],
@@ -230,6 +231,8 @@ def run():
     # 面积汇总
     data_dict, village_name, header, key_list, fenmu_list = get_summary_area()
     summary_area_excel(header, village_name, data_dict, key_list, fenmu_list)
+    # 补偿公示表
+    each_run()
 if __name__ == '__main__':
     run()
 
