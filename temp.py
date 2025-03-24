@@ -113,7 +113,8 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
                 sheet_name = header_into_excel(name, village_name, date, excel_header)
             else:
                 sheet_name = name
-
+        if i[1][-1].isdigit():
+            i[1] = i[:-1]  # 去除最后一个数字字符
 
         if "旱地" in i[1]:
             buchang, yingxiang, lingxing = dryland_alg(i, dijia, year)

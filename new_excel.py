@@ -86,7 +86,7 @@ def handle_lindi(sheet_name, area, year, roman, yingxiang, buchang, yingxiangdan
 
 def handle_beifen(sheet_name, number, beifen):
     """处理有主碑坟的补偿数据"""
-    new_data =  [
+    new_data = [
         ['有主碑坟', '座', float(number), 5000.00, beifen],
     ]
     data_into_excel(sheet_name, new_data)
