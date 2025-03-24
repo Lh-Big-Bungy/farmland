@@ -90,6 +90,7 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
     yingxiangdanjia = round(dijia, 2)
     year_to_roman = roman.toRoman(year)
     other_dict = {}
+    name_list = []
     for i in data:
         # 排除多余项
         if not i[1]:
@@ -98,6 +99,7 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
         if not name and not flag:
             name = i[0]
             sheet_name = header_into_excel(name, village_name, date, excel_header)
+            name_list.append(name)
         # 换人时，flag置为False
         if i[0] != name:
             flag = False
@@ -106,7 +108,12 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
         # 不同的人新建不同的表
         if not flag:
             name = i[0]
-            sheet_name = header_into_excel(name, village_name, date, excel_header)
+            if name not in name_list:
+                name_list.append(name)
+                sheet_name = header_into_excel(name, village_name, date, excel_header)
+            else:
+                sheet_name = name
+
 
         if "旱地" in i[1]:
             buchang, yingxiang, lingxing = dryland_alg(i, dijia, year)
