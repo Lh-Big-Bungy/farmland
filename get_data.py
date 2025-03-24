@@ -28,22 +28,25 @@ def get_data():
         selected_data = selected_data.where(pd.notna(selected_data), None)
         # 转换为列表，每行一个子列表
         result = selected_data.values.tolist()
+        for row in result:
+            if len(row) > 3 and isinstance(row[3], (int, float)):
+                row[3] = round(row[3], 3)
+
+        year = df.iloc[3, 5]
         date = result[-1][-1].split('：')[1]
         first_cell = df.iloc[0, 0].split('面积')[0]
         # 去除换行符（适用于多行合并的情况）
         first_cell = first_cell.replace("\n", "").replace("\r", "")
         # 或者使用 strip() 仅去除行首/行尾的换行符
         first_cell = first_cell.strip() + "补偿兑付表"
+        print(year)
         print(first_cell)
         print(date)
         print(result)
         print(result[-3])
-        return village_name, result, date, first_cell
+        return village_name, result, date, first_cell, year
 
 
 
 if __name__ == '__main__':
-    village, data, date, excel_header = get_data()
-    for i in data:
-        if i[0] == "胡方明":
-            print(i)
+    village, data, date, excel_header, year = get_data()

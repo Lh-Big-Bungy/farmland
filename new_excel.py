@@ -65,39 +65,22 @@ def header_into_excel(name, village_name, date, excel_header):
     wb.save(file_name)
     return sheet_name
 
-def handle_handi(data_list, sheet_name, area, qingmiao_fee, anzhi, buchang, qingmiao, lingxing, anzhidanjia,
-                 buchangdanjia):
-    if '地上归' in data_list[1]:
-        """处理地上附着物非户主所有的情况"""
-        new_data = [
-            ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-            ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
-            ['耕地零星林木', '亩', area, 2000.00, lingxing],
-        ]
-        data_into_excel(sheet_name, new_data)
+def handle_handi(sheet_name, area, year, roman, yingxiang, buchang, lingxing, yingxiangdanjia, buchangdanjia):
+    """处理地上附着物非户主所有的情况"""
+    new_data = [
+        [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+        [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
+        ['耕地零星林木', '亩', area, 2000.00, lingxing],
+    ]
+    data_into_excel(sheet_name, new_data)
 
-        """处理旱地的补偿数据"""
-        new_data2 = [
-            ['耕地青苗费', '亩', area, qingmiao_fee, qingmiao],
-        ]
-        name = data_list[1].split('归')[1].split('）')[0]
-        return new_data2, name
-    else:
-        """处理旱地的补偿数据"""
-        new_data = [
-            ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-            ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
-            ['耕地青苗费', '亩', area, qingmiao_fee, qingmiao],
-            ['耕地零星林木', '亩', area, 2000.00, lingxing],
-        ]
-        data_into_excel(sheet_name, new_data)
-        return None, None  # 确保在所有情况下都有返回值
 
-def handle_lindi(sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia):
+
+def handle_lindi(sheet_name, area, year, roman, yingxiang, buchang, yingxiangdanjia, buchangdanjia):
     """处理林地、建设用地、道路、沟渠的补偿数据"""
     new_data = [
-        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+        [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
     ]
     data_into_excel(sheet_name, new_data)
 
@@ -115,12 +98,12 @@ def handle_pufen(sheet_name, number, pufen):
     ]
     data_into_excel(sheet_name, new_data)
 
-def handle_shaichang(data_list, sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia, shaichang):
+def handle_shaichang(data_list, sheet_name, area, year, roman, yingxiang, buchang, yingxiangdanjia, buchangdanjia, shaichang):
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm2', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm2', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -132,19 +115,19 @@ def handle_shaichang(data_list, sheet_name, area, anzhi, buchang, anzhidanjia, b
     else:
         """处理晒场硬化的补偿数据"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm2', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm2', area, yingxiangdanjia, yingxiang],
             ['晒场硬化', 'm2', area, 40.00, shaichang],
         ]
         data_into_excel(sheet_name, new_data)
         return None, None  # 确保在所有情况下都有返回值
 
-def handle_shucaidapeng(data_list, sheet_name, area, anzhi, buchang, anzhidanjia, buchangdanjia, shucaidapeng):
+def handle_shucaidapeng(data_list, sheet_name, area, year, roman, yingxiang, buchang, yingxiangdanjia, buchangdanjia, shucaidapeng):
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm2', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm2', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -156,8 +139,8 @@ def handle_shucaidapeng(data_list, sheet_name, area, anzhi, buchang, anzhidanjia
     else:
         """处理蔬菜大棚的补偿数据"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm2', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm2', area, yingxiangdanjia, yingxiang],
             ['蔬菜大棚拆迁', 'm2', area, 45.00, shucaidapeng],
         ]
         data_into_excel(sheet_name, new_data)
@@ -180,16 +163,16 @@ def handle_shuiguan(sheet_name, number, shuiguan):
 def handle_dijiao(sheet_name, number, dijiao):
     """处理地窖的补偿数据"""
     new_data = [
-        ['地窖', '座',float(number), 800.00, dijiao],
+        ['地窖', '座', float(number), 800.00, dijiao],
     ]
     data_into_excel(sheet_name, new_data)
 
-def handle_shuichi(data_list, sheet_name, area, volume, anzhi, buchang, anzhidanjia, buchangdanjia, shuichi):
+def handle_shuichi(data_list, sheet_name, area, year, roman, volume, yingxiang, buchang, yingxiangdanjia, buchangdanjia, shuichi):
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -201,19 +184,19 @@ def handle_shuichi(data_list, sheet_name, area, volume, anzhi, buchang, anzhidan
     else:
         """处理浆砌水池的补偿数据"""
         new_data = [
-            ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-            ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
             ['浆砌水池', 'm3', volume, 440.00, shuichi],
         ]
         data_into_excel(sheet_name, new_data)
         return None, None  # 确保在所有情况下都有返回值
 
-def handle_yutang(data_list, sheet_name, area, volume, anzhi, buchang,anzhidanjia, buchangdanjia, yutang, yumiao):
+def handle_yutang(data_list, sheet_name, area, year, roman, volume, yingxiang, buchang,yingxiangdanjia, buchangdanjia, yutang, yumiao):
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -226,29 +209,29 @@ def handle_yutang(data_list, sheet_name, area, volume, anzhi, buchang,anzhidanji
     else:
         """处理土鱼塘的补偿数据"""
         new_data = [
-            ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-            ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
             ['土鱼塘', 'm3', volume, 7.40, yutang],
             ['鱼损', '亩', area, 1000.00, yumiao],
         ]
         data_into_excel(sheet_name, new_data)
         return None, None  # 确保在所有情况下都有返回值
 
-def handle_zhaijidi(sheet_name, area, buchang, anzhi, buchangdanjia, anzhidanjia, lingxing):
+def handle_zhaijidi(sheet_name, area, year, roman, buchang, yingxiang, buchangdanjia, yingxiangdanjia, lingxing):
     """处理宅基地的补偿数据"""
     new_data = [
-        ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-        ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+        [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+        [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
         ['房前屋后零星林木', '户', 1.000, 1000.00, lingxing],
     ]
     data_into_excel(sheet_name, new_data)
 
-def handle_default(data_list, sheet_name, tree_type, area, anzhi, buchang, anzhidanjia, buchangdanjia, tree, treedanjia):
+def handle_default(data_list, sheet_name, tree_type, area, year, roman, yingxiang, buchang, yingxiangdanjia, buchangdanjia, tree, treedanjia):
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            ['土地补偿费（户）', 'm2', area, buchangdanjia, buchang],
-            ['土地安置补助费', 'm2', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
         tree_type = tree_type.split('（')[0]
@@ -260,8 +243,8 @@ def handle_default(data_list, sheet_name, tree_type, area, anzhi, buchang, anzhi
     else:
         """默认情况（其他类型）"""
         new_data = [
-            ['土地补偿费（户）', '亩', area, buchangdanjia, buchang],
-            ['土地安置补助费', '亩', area, anzhidanjia, anzhi],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
             [tree_type, '亩', area, treedanjia, tree],
         ]
         data_into_excel(sheet_name, new_data)
