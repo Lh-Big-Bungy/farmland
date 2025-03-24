@@ -95,6 +95,7 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
     buchangdanjia = round(dijia * 0.28, 2)
     anzhidanjia = round(dijia * 0.6, 2)
     other_dict = {}
+    name_list = []
     for i in data:
         # 排除多余项
         if not i[1]:
@@ -111,7 +112,12 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
         # 不同的人新建不同的表
         if not flag:
             name = i[0]
-            sheet_name = header_into_excel(name, village_name, date, excel_header)
+            # 避免人名重复出现时重复新建表格
+            if name not in name_list:
+                name_list.append(name)
+                sheet_name = header_into_excel(name, village_name, date, excel_header)
+            else:
+                sheet_name = name
 
         if "旱地" in i[1]:
             buchang, anzhi, qingmiao, lingxing = dryland_alg(i, dijia, qingmiao_fee)
