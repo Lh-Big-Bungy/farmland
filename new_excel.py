@@ -171,8 +171,8 @@ def handle_shuichi(data_list, sheet_name, area, year, roman, volume, yingxiang, 
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
-            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -184,8 +184,8 @@ def handle_shuichi(data_list, sheet_name, area, year, roman, volume, yingxiang, 
     else:
         """处理浆砌水池的补偿数据"""
         new_data = [
-            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
-            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
             ['浆砌水池', 'm3', volume, 440.00, shuichi],
         ]
         data_into_excel(sheet_name, new_data)
@@ -195,8 +195,8 @@ def handle_yutang(data_list, sheet_name, area, year, roman, volume, yingxiang, b
     if '地上归' in data_list[1]:
         """处理地上附着物非户主所有的情况"""
         new_data = [
-            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
-            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
         ]
         data_into_excel(sheet_name, new_data)
 
@@ -209,8 +209,8 @@ def handle_yutang(data_list, sheet_name, area, year, roman, volume, yingxiang, b
     else:
         """处理土鱼塘的补偿数据"""
         new_data = [
-            [f'临时用地{year}年补偿{roman}', 'm3', area, buchangdanjia, buchang],
-            [f'临时用地影响其1年{roman}', 'm3', area, yingxiangdanjia, yingxiang],
+            [f'临时用地{year}年补偿{roman}', '亩', area, buchangdanjia, buchang],
+            [f'临时用地影响其1年{roman}', '亩', area, yingxiangdanjia, yingxiang],
             ['土鱼塘', 'm3', volume, 7.40, yutang],
             ['鱼损', '亩', area, 1000.00, yumiao],
         ]
