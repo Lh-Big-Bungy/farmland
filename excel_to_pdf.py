@@ -47,7 +47,10 @@ def excel_to_pdf(input_excel, output_pdf):
         # **计算是否分页**
         if (available_height - total_height) > 354:
             sheet.PageSetup.FooterMargin = 150  # 表格小，页脚固定 150
-            sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
+            # sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
+            # sheet.PageSetup.RightFooter = '&R' + "户主签字（盖章）：" + u'\u3000' * 10
+            sheet.PageSetup.LeftFooter = " " * 40 + "户主签字（盖章）："
+
 
         else:
             # 获取最后一行的行数
@@ -57,7 +60,10 @@ def excel_to_pdf(input_excel, output_pdf):
             if last_row == 28:
                 sheet.PageSetup.FooterMargin = 50
                 # 设置右下页脚
-                sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
+                # sheet.PageSetup.RightFooter = ("户主签字（盖章）：                          ")
+                # sheet.PageSetup.RightFooter = '&R' + "户主签字（盖章）：" + u'\u3000' * 10
+                sheet.PageSetup.LeftFooter = " " * 40 + "户主签字（盖章）："
+
             else:# 计算目标行号（最后一行的后两行）
                 target_row = last_row + 2
                 # 获取中间列的列号
