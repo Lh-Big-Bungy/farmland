@@ -5,6 +5,10 @@ from openpyxl import load_workbook, Workbook
 import cn2an
 from hanziconv import HanziConv  # 简体转繁体
 from openpyxl.utils import get_column_letter
+from decimal import Decimal, ROUND_HALF_UP
+
+def round_half_up(value, digits):
+    return float(Decimal(str(value)).quantize(Decimal('1.' + '0' * digits), rounding=ROUND_HALF_UP))
 
 
 def header_into_excel(name, village_name, date, excel_header):
@@ -303,10 +307,10 @@ def data_into_excel(sheet_name, new_data):
         for col, value in enumerate(row, start=1):
             # 处理小数格式
             if col == 3:  # C列 (第3列) 保留3位小数
-                value = round(float(value), 3) if isinstance(value, (int, float)) else value
-                cell_format = '0.000'  # Excel 显示 3 位小数
+                value = round_half_up(value, 3) if isinstance(value, (int, float)) else value
+                cell_format = '0.000'
             elif col in [4, 5]:  # D、E列 (第4、5列) 保留2位小数
-                value = round(float(value), 2) if isinstance(value, (int, float)) else value
+                value = round_half_up(value, 2) if isinstance(value, (int, float)) else value
                 cell_format = '0.00'  # Excel 显示 2 位小数
             else:
                 cell_format = None  # 其他列不做特殊格式化
