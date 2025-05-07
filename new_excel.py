@@ -30,6 +30,9 @@ def header_into_excel(name, village_name, date, excel_header):
     # **Step 3: 打开 Excel，准备操作**
     wb = load_workbook(file_name)
 
+    # 兼容村集体也有地上附着物的情况
+    if name == "村集体" and "村集体" in wb.sheetnames:
+        return "村集体"
     # **Step 4: 创建新的 Sheet**
 
     if flag:
@@ -39,6 +42,8 @@ def header_into_excel(name, village_name, date, excel_header):
 
     # 获取所有 Sheet 的名称列表
     sheet_names = wb.sheetnames
+
+
 
     # 获取 Sheet 的个数
     sheet_count = len(sheet_names)
