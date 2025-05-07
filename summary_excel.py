@@ -82,7 +82,9 @@ def summary_money_excel(header, village, data_dict, key_list, fenmu_list):
         # 合并 E3 到 E4 单元格
         ws.merge_cells('E3:F4')
         ws['E3'] = '土地安置费'
-        ws['E4'] = data_dict['土地安置补助费']
+        # 合并 E5 到 F5 单元格
+        ws.merge_cells('E5:F5')
+        ws['E5'] = data_dict['土地安置补助费']
     if key_list:
         # 计算小计并填入最后一个单元格下面
         total = sum(data_dict[key] for key in key_list)
