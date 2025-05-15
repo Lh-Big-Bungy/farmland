@@ -58,26 +58,29 @@ def header_into_excel(name, village_name, date, excel_header):
     ws.merge_cells(merge_range)
     ws["A1"].value = excel_header
     ws["A1"].alignment = Alignment(wrap_text=True, horizontal="center", vertical="center")  # 单独设置A1
-
+    merge_range2 = "A2:F2"
+    ws.merge_cells(merge_range2)
+    ws["A2"].value = f"户号:0000{sheet_count:<6}  户主:{name:<12}  住址:{village_name:<10}  {date}"
+    ws["A2"].alignment = Alignment(horizontal="left", vertical="center")
     # **Step 6: 合并 "户号" 这一列的单元格（如 A2:B2）**
-    ws["A2"].value = f"户号:0000{sheet_count}"
+    # ws["A2"].value = f"户号:0000{sheet_count}"
     ws["A3"].value = f"项    目"
     ws.merge_cells("B2:C2")  # 让第一行数据的"户主"占两格
-    ws["B2"].value = f"户主:{name}"
+    # ws["B2"].value = f"户主:{name}"
     ws["B3"].value = f"单位"
-    ws["D2"].value = f"住址:{village_name}"
+    # ws["D2"].value = f"住址:{village_name}"
     ws["C3"].value = f"数量"
-    ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
-    ws["E2"].value = f"{date}"
+    # ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
+    # ws["E2"].value = f"{date}"
     ws["D3"].value = f"单价(元)"
     ws["E3"].value = f"小计(元)"
     ws["F3"].value = f"备注"
-    cell_list = ["A2", "A3", "B3", "C3", "D3", "E3", "F3", "E2"]
-    cell_list2 = ["B2", "D2"]
+    cell_list = ["A3", "B3", "C3", "D3", "E3", "F3"]
+    # cell_list2 = ["B2", "D2"]
     for i in cell_list:
         ws[i].alignment = Alignment(horizontal="center", vertical="center")
-    for j in cell_list2:
-        ws[j].alignment = Alignment(horizontal="left", vertical="center")
+    # for j in cell_list2:
+    #     ws[j].alignment = Alignment(horizontal="left", vertical="center")
 
     wb.save(file_name)
     return sheet_name
