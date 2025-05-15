@@ -60,7 +60,7 @@ def each_money_to_excel(data_list, village, header):
         total += data[1]  # 累加金额
     # 添加合计行
     last_row = len(data_list) + 4
-    ws[f'A{last_row}'] = "合计"
+    ws[f'A{last_row}'] = "合    计"
     ws[f'D{last_row}'] = total
     ws[f'D{last_row}'].number_format = FORMAT_NUMBER_00  # 设置合计行为两位小数
 
