@@ -17,30 +17,32 @@ def get_megerd_data():
     # 获取合并单元格范围
     merged_ranges = ws.merged_cells.ranges
 
-    # 存储被合并覆盖到的行号
-    merged_rows_in_col_d = set()
+    merged_blocks = []  # 用于存储每块合并区域的行号列表
 
-    # 遍历合并区域
     for merged_range in merged_ranges:
-        # 获取起始和结束行列
         min_col, min_row, max_col, max_row = merged_range.bounds
 
-        # 如果合并区域在 B 列（第 2 列）
+        # 如果是 D 列（第 4 列）
         if min_col == 4 and max_col == 4:
-            # 将这个范围内的所有行都记录下来（通常用于标记）
-            for row in range(min_row, max_row + 1):
-                merged_rows_in_col_d.add(row)
+            # 生成这一块合并区域的所有行号，并加到列表中
+            merged_block = list(range(min_row, max_row + 1))
+            merged_blocks.append(merged_block)
+
+    print("D列中被合并的区域行号块为：", merged_blocks)
 
     # 打印被合并的行
-    print("D列中被合并的行有：", sorted(merged_rows_in_col_d))
     merged_dict = {}
-    for row in sorted(merged_rows_in_col_d):
-        name = ws.cell(row=row, column=2).value  # 名字是第2列
-        area = ws.cell(row=row, column=5).value
+    for block in merged_blocks:
+        name = ws.cell(row=block[0], column=2).value  # 取合并块首行的“名字”
+        area_list = []
+        for row in block:
+            area = ws.cell(row=row, column=5).value  # 面积是第5列
+            area_list.append(area)
+
         if name in merged_dict:
-            merged_dict[name].append(area)
+            merged_dict[name].append(area_list)  # 添加一个新的区域
         else:
-            merged_dict[name] = [area]
+            merged_dict[name] = [area_list]  # 创建新的区域列表
     print(merged_dict)
     return merged_dict
 
@@ -58,33 +60,37 @@ def merged_f_col(merged_dict):
             c_col = ws["C"]
             # print(f"\n📄 Sheet: {sheet} - C列所有值:")
             start_end_list = []
-            merged_list = []
             for i in merged_dict[sheet]:
-                start_index = False
-                end_index = False
-                s_e_list = []
-                for cell in c_col[3:-1]:
-                    row = cell.row
-            #        print(cell.coordinate, "->", cell.value)
-                    if cell.value == i and not start_index:  #  获取开始的行数
-                        start_index = row
-                    elif cell.value != i and start_index and not end_index:
-                        if cell.value == None:   # 若数据在末尾，需要把无数据的那一行加入再减去1即得到该行数
-                            end_index = row - 1
-                        else:
-                            end_index = row  # 若数据不是在最后一行，直接获取当前行数
-                s_e_list.append(start_index)
-                s_e_list.append(end_index)
-            #    print(s_e_list)
-                start_end_list.append(s_e_list)
-            # print(start_end_list)
-            for x in range(len(start_end_list) - 1):
-                if start_end_list[x][1] == start_end_list[x+1][0]:  # 行号尾首相连表明是挨着的，是同一块土地
-                    if start_end_list[x][1] not in merged_list:
-                        merged_list.append(start_end_list[x][0])
-                        merged_list.append(start_end_list[x+1][1])
-            # print(99999999, merged_list)
-            ws.merge_cells(f"F{merged_list[0]}:F{merged_list[-1]}")
+                temp_se_list = []
+                for j in i:
+                    start_index = False
+                    end_index = False
+                    s_e_list = []
+                    for cell in c_col[3:-1]:
+                        row = cell.row
+                #        print(cell.coordinate, "->", cell.value)
+                        if cell.value == j and not start_index:  #  获取开始的行数
+                            start_index = row
+                        elif cell.value != j and start_index and not end_index:
+                                end_index = row - 1
+                    s_e_list.append(start_index)
+                    s_e_list.append(end_index)
+                    print(s_e_list)
+                    temp_se_list.append(s_e_list)
+                start_end_list.append(temp_se_list)  # 为了分区，出来类似这样的列表：[[[4, 7], [8, 10]], [[11, 14], [15, 17]]]
+            print(6666, start_end_list)
+            merged_list = []
+            for x in range(len(start_end_list)):
+                for y in range(len(start_end_list[x]) - 1):
+                    if (start_end_list[x][y][1] + 1) == start_end_list[x][y+1][0]:  # 行号尾首相连表明是挨着的，是同一块土地
+                        if start_end_list[x][y+1][0] not in merged_list:
+                            merged_list.append(start_end_list[x][y][0])
+                            merged_list.append(start_end_list[x][y+1][1])
+                            print(77777777, merged_list)
+                ws.merge_cells(f"F{merged_list[0]}:F{merged_list[-1]}")
+                merged_list = []
+
+
             wb.save(file_path)
 
 def f_col_merged_run():
