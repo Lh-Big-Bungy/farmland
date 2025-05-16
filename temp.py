@@ -5,6 +5,7 @@ from excel_to_pdf import excel_to_pdf
 from summary_excel import *
 from summary_area_excel import *
 from each_money_to_excel import each_run
+from merged_f_col import f_col_merged_run
 import sys
 import roman
 
@@ -221,6 +222,7 @@ def run():
     get_land_tree_fee(data, float(dijia), date, excel_header, village_name, year)
     base_path = get_base_path()
     excel_file = os.path.join(base_path, "output_file.xlsx")
+    f_col_merged_run()  # 处理D列土地合并分割问题
     pdf_file = os.path.join(base_path, "output.pdf")
     excel_to_pdf(excel_file, pdf_file)
     # 金额汇总
