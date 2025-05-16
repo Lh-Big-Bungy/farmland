@@ -30,7 +30,7 @@ def get_summary_area():
             data_dict[key] = data_dict.get(key, Decimal('0')) + area  # 累加面积  防止精度错误
     print(data_dict)
     ws = wb.active
-    village_name = ws['D2'].value.split(':')[1]
+    village_name = ws['A2'].value.split('住址:')[1].split(' ')[0]
     header = ws['A1'].value.split('兑付表')[0] + '分类面积汇总表'
     key_list = []
     print(village_name, header)
