@@ -18,8 +18,8 @@ def get_data():
         e_column = ws['E']  # 获取 E 列的所有单元格
         # 获取倒数第二行的数据
         money = e_column[-2].value  # 倒数第二行
-        name = ws['B2'].value.split(":")[1]
-        village = ws['D2'].value.split(':')[1]
+        name = ws['A2'].value.split("户主:")[1].split(" ")[0]
+        village = ws['A2'].value.split('住址:')[1].split(" ")[0]
         header = ws['A1'].value.split('兑付表')[0] + '公示表'
         # 将数据存储为元组
         data_tuple = (name, Decimal(str(money)).quantize(Decimal('0.00'), rounding=ROUND_HALF_UP))  # 转换为 Decimal 并保留两位小数

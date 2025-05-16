@@ -42,8 +42,15 @@ def header_into_excel(name, village_name, date, excel_header):
 
     # 获取所有 Sheet 的名称列表
     sheet_names = wb.sheetnames
-
-
+    # 判断长度并插入换行符
+    if len(excel_header) > 27:
+        # 这里按汉字长度截取，假设汉字为全角
+        first_part = excel_header[:27]
+        second_part = excel_header[27:]
+        excel_header = first_part + '\n' + second_part
+        char_per_line = 27
+        lines = len(excel_header) // char_per_line + 1
+        ws.row_dimensions[1].height = 14 * lines  # 基础行高14
 
     # 获取 Sheet 的个数
     sheet_count = len(sheet_names)
@@ -51,25 +58,29 @@ def header_into_excel(name, village_name, date, excel_header):
     merge_range = "A1:F1"
     ws.merge_cells(merge_range)
     ws["A1"].value = excel_header
+    ws["A1"].alignment = Alignment(wrap_text=True, horizontal="center", vertical="center")  # 单独设置A1
     # **Step 6: 合并 "户号" 这一列的单元格（如 A2:B2）**
-    ws["A2"].value = f"户号:0000{sheet_count}"
+    merge_range2 = "A2:F2"
+    ws.merge_cells(merge_range2)
+    ws["A2"].value = f"户号:0000{sheet_count:<6}  户主:{name:<12}  住址:{village_name:<10}  {date}"
+    ws["A2"].alignment = Alignment(horizontal="left", vertical="center")
     ws["A3"].value = f"项    目"
     ws.merge_cells("B2:C2")  # 让第一行数据的"户主"占两格
-    ws["B2"].value = f"户主:{name}"
+    # ws["B2"].value = f"户主:{name}"
     ws["B3"].value = f"单位"
-    ws["D2"].value = f"住址:{village_name}"
+    # ws["D2"].value = f"住址:{village_name}"
     ws["C3"].value = f"数量"
-    ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
-    ws["E2"].value = f"{date}"
+    # ws.merge_cells("E2:F2")  # 让第一行数据的"时间"占两格
+    # ws["E2"].value = f"{date}"
     ws["D3"].value = f"单价(元)"
     ws["E3"].value = f"小计(元)"
     ws["F3"].value = f"备注"
-    cell_list = ["A1", "A2", "A3", "B3", "C3", "D3", "E3", "F3", "E2"]
-    cell_list2 = ["B2", "D2"]
+    cell_list = ["A3", "B3", "C3", "D3", "E3", "F3"]
+    # cell_list2 = ["B2", "D2"]
     for i in cell_list:
         ws[i].alignment = Alignment(horizontal="center", vertical="center")
-    for j in cell_list2:
-        ws[j].alignment = Alignment(horizontal="left", vertical="center")
+    # for j in cell_list2:
+    #    ws[j].alignment = Alignment(horizontal="left", vertical="center")
 
     wb.save(file_name)
     return sheet_name
