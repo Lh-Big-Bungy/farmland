@@ -53,7 +53,7 @@ def header_into_excel(name, village_name, date, excel_header):
     ws["A1"].value = excel_header
     # **Step 6: 合并 "户号" 这一列的单元格（如 A2:B2）**
     ws["A2"].value = f"户号:0000{sheet_count}"
-    ws["A3"].value = f"项目"
+    ws["A3"].value = f"项    目"
     ws.merge_cells("B2:C2")  # 让第一行数据的"户主"占两格
     ws["B2"].value = f"户主:{name}"
     ws["B3"].value = f"单位"
@@ -373,8 +373,8 @@ def summary_into_excel(sheet_name):
         # 设置单元格为垂直居中，左对齐
         cell.alignment = Alignment(horizontal='right', vertical='center')
         # 在 A 列最后一行填入 "合计"
-        ws.cell(row=last_row + 1, column=1, value="合计")
-        ws.cell(row=last_row + 2, column=1, value="大写")
+        ws.cell(row=last_row + 1, column=1, value="合    计")
+        ws.cell(row=last_row + 2, column=1, value="大    写")
         ws.cell(row=last_row + 2, column=2, value="人民币")
         merge_range = f"C{last_row + 2}:F{last_row + 2}"
         ws.merge_cells(merge_range)

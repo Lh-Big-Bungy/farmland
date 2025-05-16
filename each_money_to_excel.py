@@ -1,6 +1,6 @@
 from openpyxl import Workbook, load_workbook
 from decimal import Decimal, ROUND_HALF_UP
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, Border, Side
 from openpyxl.styles.numbers import FORMAT_NUMBER_00  # 数字格式
 
 def get_data():
@@ -31,6 +31,13 @@ def each_money_to_excel(data_list, village, header):
     # 创建一个新的工作簿
     wb = Workbook()
     ws = wb.active
+    # 设置列宽
+    column_widths = [20, 15, 15, 15, 20]
+    for i, width in enumerate(column_widths, start=1):
+        ws.column_dimensions[chr(64 + i)].width = width
+
+    # 设置行高（A1 所在的第一行）
+    ws.row_dimensions[1].height = 70  # 可根据需要调整
     # 合并 A3 到 A4 单元格
     ws.merge_cells('A1:E1')
     ws['A1'] = header
@@ -71,6 +78,12 @@ def each_money_to_excel(data_list, village, header):
     for row in ws.iter_rows(min_row=3, max_row=last_row, min_col=1, max_col=3):
         for cell in row:
             cell.alignment = Alignment(horizontal='center', vertical='center')
+    # ✅ 添加边框
+    thin = Side(border_style="thin", color="000000")
+    border = Border(left=thin, right=thin, top=thin, bottom=thin)
+    for row in ws.iter_rows(min_row=3, max_row=last_row, min_col=1, max_col=5):
+        for cell in row:
+            cell.border = border
     wb.save("补偿公示表.xlsx")
 
 def each_run():

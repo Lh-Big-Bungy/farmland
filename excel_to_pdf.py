@@ -27,16 +27,21 @@ def excel_to_pdf(input_excel, output_pdf):
         sheet.Rows(1).Font.Size = 16  # 设置字体大小为 16
         sheet.Rows(1).Font.Bold = True  # 设置字体加粗
         # 在第一行和第二行之间插入两行空白行
-        sheet.Rows("2:3").Insert()  # 在第二行插入两行空白行
+        sheet.Rows(2).Insert()  # 在第二行插入两行空白行
         row_height = 25  # 每行高度
+        row_num = 0  # 当标题超过一行时，总行数要加1
         # 设置每行高度
         for row in sheet.UsedRange.Rows:
-            row.RowHeight = row_height  # 设置每行高度为 25 磅
+            if row.RowHeight > row_height:  # 当第一行的高度超过25时，说明表头过长，自动换行后，行高高于25, 高度40可显示两行
+                row.RowHeight = 50
+                row_num = 1  # 当标题超过一行时，总行数要加1
+            else:
+                row.RowHeight = row_height  # 设置每行高度为 25 磅
 
         sheet.PageSetup.LeftMargin = 80  # 左边距设置为 80 磅
         sheet.PageSetup.RightMargin = 65  # 右边距设置为 65 磅
 
-        total_rows = sheet.UsedRange.Rows.Count
+        total_rows = sheet.UsedRange.Rows.Count + row_num
         total_height = total_rows * row_height  # 计算表格的总高度
         # **让 Excel 计算分页行**
 
@@ -46,24 +51,29 @@ def excel_to_pdf(input_excel, output_pdf):
         available_height = page_height - top_margin - bottom_margin
         # **计算是否分页**
         if (available_height - total_height) > 354:
-            sheet.PageSetup.FooterMargin = 150  # 表格小，页脚固定 150
-            sheet.PageSetup.LeftFooter = ' ' * 40 + "户主签字（盖章）："
+            sheet.PageSetup.FooterMargin = 90  # 表格小，页脚固定 150
+            sheet.PageSetup.LeftFooter = ' ' * 45 + "户主签字（盖章）："
 
         else:
-            # 获取最后一行的行数
-            last_row = sheet.UsedRange.Rows.Count
+            if row_num == 1:
+                # 获取最后一行的行数
+                last_row = sheet.UsedRange.Rows.Count + row_num
+            else:
+                # 获取最后一行的行数
+                last_row = sheet.UsedRange.Rows.Count
+
             print("last row is ", last_row)
             # 等于28行时，不用设置页脚的方法，签名会去到下一分页
             if last_row == 28:
                 sheet.PageSetup.FooterMargin = 50
                 # 设置右下页脚
-                sheet.PageSetup.LeftFooter = ' ' * 40 + "户主签字（盖章）"
+                sheet.PageSetup.LeftFooter = ' ' * 45 + "户主签字（盖章）"
             else:# 计算目标行号（最后一行的后两行）
                 target_row = last_row + 2
                 # 获取中间列的列号
                 last_column = sheet.Cells(1, sheet.Columns.Count).End(-4159).Column  # -4159 表示 xlToLeft
                 # 在目标行的中间列设置值
-                sheet.Cells(target_row, 4).Value = '户主签字（盖章）：'
+                sheet.Cells(target_row, 5).Value = '户主签字（盖章）：'
     # 转换为 PDF（0 代表整个工作簿导出）
     wb.ExportAsFixedFormat(0, output_pdf_path)
 
