@@ -1,6 +1,8 @@
-from openpyxl import Workbook, load_workbook
 from openpyxl import load_workbook
 import glob
+from new_excel import round_half_up
+
+
 def get_megerd_data():
     # 查找当前目录下所有符合模式的文件
     files = glob.glob("*（*）.xlsx")
@@ -37,6 +39,7 @@ def get_megerd_data():
         area_list = []
         for row in block:
             area = ws.cell(row=row, column=5).value  # 面积是第5列
+            area = round_half_up(area, 3) if isinstance(area, (int, float)) else area
             area_list.append(area)
 
         if name in merged_dict:
@@ -68,27 +71,45 @@ def merged_f_col(merged_dict):
                     s_e_list = []
                     for cell in c_col[3:-1]:
                         row = cell.row
+                        rounded_value = round_half_up(cell.value, 3) if isinstance(cell.value, (int, float)) else cell.value
+
                 #        print(cell.coordinate, "->", cell.value)
-                        if cell.value == j and not start_index:  #  获取开始的行数
+                        if rounded_value == j and not start_index:  #  获取开始的行数
                             start_index = row
-                        elif cell.value != j and start_index and not end_index:
-                                end_index = row - 1
+                        elif rounded_value != j and start_index and not end_index:
+                            end_index = row - 1
                     s_e_list.append(start_index)
                     s_e_list.append(end_index)
                     print(s_e_list)
                     temp_se_list.append(s_e_list)
                 start_end_list.append(temp_se_list)  # 为了分区，出来类似这样的列表：[[[4, 7], [8, 10]], [[11, 14], [15, 17]]]
+            # 去重内部列表
+            for i in range(len(start_end_list)):
+                seen = set()
+                unique = []
+                for item in start_end_list[i]:
+                    item_tuple = tuple(item)
+                    if item_tuple not in seen:
+                        seen.add(item_tuple)
+                        unique.append(item)
+                start_end_list[i] = unique
             print(6666, start_end_list)
             merged_list = []
             for x in range(len(start_end_list)):
-                for y in range(len(start_end_list[x]) - 1):
-                    if (start_end_list[x][y][1] + 1) == start_end_list[x][y+1][0]:  # 行号尾首相连表明是挨着的，是同一块土地
-                        if start_end_list[x][y+1][0] not in merged_list:
-                            merged_list.append(start_end_list[x][y][0])
-                            merged_list.append(start_end_list[x][y+1][1])
-                            print(77777777, merged_list)
-                ws.merge_cells(f"F{merged_list[0]}:F{merged_list[-1]}")
-                merged_list = []
+                if len(start_end_list[x]) > 1:
+                    # print(222222,len(start_end_list[x]))
+                    for y in range(len(start_end_list[x]) - 1):
+                        if (start_end_list[x][y][1] + 1) == start_end_list[x][y + 1][0]:  # 行号尾首相连表明是挨着的，是同一块土地
+                            if start_end_list[x][y + 1][0] not in merged_list:
+                                merged_list.append(start_end_list[x][y][0])
+                                merged_list.append(start_end_list[x][y + 1][1])
+                                # print(77777777, merged_list)
+                    # print('99999',merged_list)
+                    ws.merge_cells(f"F{merged_list[0]}:F{merged_list[-1]}")
+                    merged_list = []
+                else:
+                    ws.merge_cells(f"F{start_end_list[0][0][0]}:F{start_end_list[0][0][1]}")
+                    merged_list = []
 
 
             wb.save(file_path)

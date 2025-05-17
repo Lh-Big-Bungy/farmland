@@ -101,6 +101,8 @@ def get_land_tree_fee(data, dijia, qingmiao_fee, date, excel_header, village_nam
         # 排除多余项
         if not i[1]:
             continue
+        i[2] = round_half_up(i[2], 2) if isinstance(i[2], (int, float)) else i[2]
+        i[3] = round_half_up(i[3], 3) if isinstance(i[3], (int, float)) else i[3]
         # 第一个人就新建表
         if not name and not flag:
             name = i[0]
