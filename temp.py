@@ -93,6 +93,9 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
     other_dict = {}
     name_list = []
     for i in data:
+        i[2] = round_half_up(i[2], 2) if isinstance(i[2], (int, float)) else i[2]
+        i[3] = round_half_up(i[3], 3) if isinstance(i[3], (int, float)) else i[3]
+
         # 排除多余项
         if not i[1]:
             continue
