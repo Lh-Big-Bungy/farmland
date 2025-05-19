@@ -234,7 +234,8 @@ def run():
     get_land_tree_fee(data, float(dijia), float(qingmiao_fee), date, excel_header, village_name)
     base_path = get_base_path()
     excel_file = os.path.join(base_path, "output_file.xlsx")
-    f_col_merged_run()
+    f_col_merged_run()  # f列合并
+    sort_sheet()  # 把村集体移至最后
     pdf_file = os.path.join(base_path, "output.pdf")
     excel_to_pdf(excel_file, pdf_file)
     # 金额汇总

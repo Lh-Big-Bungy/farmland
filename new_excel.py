@@ -322,7 +322,7 @@ def data_into_excel(sheet_name, new_data):
         last_row += 1
         for col, value in enumerate(row, start=1):
             # 判断 row[2] 是否为 'm2' 或 'm3'
-            unit = row[2] if isinstance(row[2], str) else ''
+            unit = row[1] if isinstance(row[1], str) else ''
             # 只对数值做小数处理
             if isinstance(value, (int, float)):
                 if unit in ('m2', 'm3'):
@@ -403,6 +403,23 @@ def summary_into_excel(sheet_name):
                 cell.alignment = Alignment(horizontal='center', vertical='center')
         # 保存 Excel
     wb.save('output_file.xlsx')
+
+def sort_sheet():
+    # 加载工作簿
+    wb = load_workbook("output_file.xlsx")
+
+    # 指定要移动的 Sheet 名称
+    target_sheet_name = "村集体"
+
+    # 找到该 Sheet 对象
+    target_sheet = wb[target_sheet_name]
+
+    # 从工作簿的 sheets 列表中移除，再添加到末尾
+    wb._sheets.remove(target_sheet)
+    wb._sheets.append(target_sheet)
+
+    # 保存文件
+    wb.save("output_file.xlsx")
 
 if __name__ == '__main__':
 
