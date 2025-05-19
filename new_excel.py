@@ -29,10 +29,9 @@ def header_into_excel(name, village_name, date, excel_header):
 
     # **Step 3: 打开 Excel，准备操作**
     wb = load_workbook(file_name)
-
-    # 兼容村集体也有地上附着物的情况
-    if name == "村集体" and "村集体" in wb.sheetnames:
-        return "村集体"
+    # 兼容名字不排在一起或者村集体也有地上附着物的情况
+    if name in wb.sheetnames and len(wb.sheetnames) != 1:  # 避免name为第一个时就进入这个处理
+        return name
     # **Step 4: 创建新的 Sheet**
 
     if flag:
@@ -321,16 +320,17 @@ def data_into_excel(sheet_name, new_data):
     for row in new_data:
         last_row += 1
         for col, value in enumerate(row, start=1):
-            # 判断 row[2] 是否为 'm2' 或 'm3'
-            unit = row[1] if isinstance(row[1], str) else ''
-            # 只对数值做小数处理
-            if isinstance(value, (int, float)):
-                if unit in ('m2', 'm3'):
-                    value = round_half_up(value, 2)
-                    cell_format = '0.00'
-                else:
-                    value = round_half_up(value, 3)
-                    cell_format = '0.000'
+            if col == 3:
+                # 判断 row[2] 是否为 'm2' 或 'm3'
+                unit = row[1] if isinstance(row[1], str) else ''
+                # 只对数值做小数处理
+                if isinstance(value, (int, float)):
+                    if unit in ('m2', 'm3'):
+                        value = round_half_up(value, 2)
+                        cell_format = '0.00'
+                    else:
+                        value = round_half_up(value, 3)
+                        cell_format = '0.000'
             elif col in [4, 5]:  # D、E列 (第4、5列) 保留2位小数
                 value = round_half_up(value, 2) if isinstance(value, (int, float)) else value
                 cell_format = '0.00'  # Excel 显示 2 位小数
