@@ -29,9 +29,9 @@ def header_into_excel(name, village_name, date, excel_header):
     # **Step 3: 打开 Excel，准备操作**
     wb = load_workbook(file_name)
 
-    # 兼容村集体也有地上附着物的情况
-    if name == "村集体" and "村集体" in wb.sheetnames:
-        return "村集体"
+    # 兼容名字不排在一起或者村集体也有地上附着物的情况
+    if name in wb.sheetnames and len(wb.sheetnames) != 1:  # 避免name为第一个时就进入这个处理
+        return name
 
     # **Step 4: 创建新的 Sheet**
 
