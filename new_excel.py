@@ -321,10 +321,16 @@ def data_into_excel(sheet_name, new_data):
     for row in new_data:
         last_row += 1
         for col, value in enumerate(row, start=1):
-            # 处理小数格式
-            if col == 3:  # C列 (第3列) 保留3位小数
-                value = round_half_up(value, 3) if isinstance(value, (int, float)) else value
-                cell_format = '0.000'
+            # 判断 row[2] 是否为 'm2' 或 'm3'
+            unit = row[2] if isinstance(row[2], str) else ''
+            # 只对数值做小数处理
+            if isinstance(value, (int, float)):
+                if unit in ('m2', 'm3'):
+                    value = round_half_up(value, 2)
+                    cell_format = '0.00'
+                else:
+                    value = round_half_up(value, 3)
+                    cell_format = '0.000'
             elif col in [4, 5]:  # D、E列 (第4、5列) 保留2位小数
                 value = round_half_up(value, 2) if isinstance(value, (int, float)) else value
                 cell_format = '0.00'  # Excel 显示 2 位小数

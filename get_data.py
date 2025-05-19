@@ -1,7 +1,7 @@
 import os
 import glob
 import pandas as pd
-
+import re
 def get_data():
     # 获取当前目录
     current_dir = os.getcwd()
@@ -34,6 +34,7 @@ def get_data():
         first_cell = first_cell.replace("\n", "").replace("\r", "")
         # 或者使用 strip() 仅去除行首/行尾的换行符
         first_cell = first_cell.strip() + "补偿兑付表"
+        first_cell = re.sub(r'（[^（）]*）$', '', first_cell)
         print(first_cell)
         print(date)
         print(result)
