@@ -407,16 +407,18 @@ def summary_into_excel(sheet_name):
 def sort_sheet():
     # 加载工作簿
     wb = load_workbook("output_file.xlsx")
+    try:
+        # 指定要移动的 Sheet 名称
+        target_sheet_name = "村集体"
 
-    # 指定要移动的 Sheet 名称
-    target_sheet_name = "村集体"
+        # 找到该 Sheet 对象
+        target_sheet = wb[target_sheet_name]
 
-    # 找到该 Sheet 对象
-    target_sheet = wb[target_sheet_name]
-
-    # 从工作簿的 sheets 列表中移除，再添加到末尾
-    wb._sheets.remove(target_sheet)
-    wb._sheets.append(target_sheet)
+        # 从工作簿的 sheets 列表中移除，再添加到末尾
+        wb._sheets.remove(target_sheet)
+        wb._sheets.append(target_sheet)
+    except:
+        pass
 
     # 保存文件
     wb.save("output_file.xlsx")
