@@ -186,9 +186,12 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
             buchang, yingxiang, lingxing = zhaijidi_alg(i, dijia, year)
             handle_zhaijidi(sheet_name, i[3], year, year_to_roman, buchang, yingxiang, buchangdanjia, yingxiangdanjia, lingxing)
         else:
+            dilei_tag = False
             for key, value in land_tree_type.items():
                 for type in key:
+                    # 地类不出错tag为true，出错为false
                     if type in i[1]:
+                        dilei_tag = True
                         for daxiao, fee in value.items():
                             if daxiao in i[1]:
                                 money = fee
@@ -204,6 +207,9 @@ def get_land_tree_fee(data, dijia, date, excel_header, village_name, year):
                                         other_dict[other_people_name] = [other_people_list]
                                     else:
                                         other_dict[other_people_name].append(other_people_list)
+            if not dilei_tag:
+                raise ValueError("地类不正确")
+
     if other_dict:
         other_dict["基本信息"] = [village_name, date, excel_header]
         other_people_into_excel(other_dict)
